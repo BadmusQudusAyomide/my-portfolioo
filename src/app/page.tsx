@@ -1,6 +1,7 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Image from 'next/image'; // Import Next.js Image component
 import Loader from '../components/Loader';
 import Navbar from '../components/Navbar';
 
@@ -96,7 +97,7 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="text-lg md:text-xl text-purple-400 mb-4"
               >
-                Hello, Im
+                Hello, I'm
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -172,7 +173,7 @@ export default function Home() {
                 About Me
               </h2>
               <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-                Im a passionate frontend developer with a love for building clean, user-friendly interfaces using modern technologies.
+                I'm a passionate frontend developer with a love for building clean, user-friendly interfaces using modern technologies.
               </p>
             </motion.div>
 
@@ -186,12 +187,14 @@ export default function Home() {
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-75 animate-pulse"></div>
                   <div className="relative bg-gray-800 rounded-2xl p-1">
-                    <div className="h-64 md:h-80 w-full bg-gray-700 rounded-xl overflow-hidden">
-                      {/* Using local profile image */}
-                      <img 
+                    <div className="h-64 md:h-80 w-full bg-gray-700 rounded-xl overflow-hidden relative">
+                      {/* Using Next.js Image component */}
+                      <Image 
                         src="/1.png" 
                         alt="Badmus Qudus Ayomide" 
-                        className="w-full h-full object-cover"
+                        fill
+                        style={{ objectFit: "cover" }}
+                        priority
                       />
                     </div>
                   </div>
@@ -218,7 +221,7 @@ export default function Home() {
                       <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
                         <div className="w-3 h-3 rounded-full bg-gray-900"></div>
                       </div>
-                      <div className="absolute left-3 top-7 bottom-0 w-0.5 bg-gray-700"></div>
+                      <div className={(index < timeline.length - 1) ? "absolute left-3 top-7 bottom-0 w-0.5 bg-gray-700" : ""}></div>
                       <div className="bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm border border-gray-700/50">
                         <span className="text-sm text-purple-400">{item.year}</span>
                         <h4 className="text-lg font-semibold mt-1 text-gray-100">{item.title}</h4>
@@ -265,10 +268,14 @@ export default function Home() {
                   <div className="relative">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-t-xl opacity-75 group-hover:opacity-100 transition-opacity blur-sm"></div>
                     <div className="relative h-48 overflow-hidden rounded-t-xl">
-                      <img 
+                      {/* Using Next.js Image component */}
+                      <Image 
                         src={project.image} 
                         alt={project.title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
                   </div>

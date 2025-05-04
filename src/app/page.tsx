@@ -20,7 +20,7 @@ export default function Home() {
       <section id="about" className="container mx-auto py-16 px-4">
         <h2 className="text-3xl font-bold mb-4">About Me</h2>
         <p className="text-lg">
-          I'm a passionate frontend developer with a love for building clean, user-friendly interfaces using React and Tailwind CSS.
+          Im a passionate frontend developer with a love for building clean, user-friendly interfaces using React and Tailwind CSS.
         </p>
       </section>
 

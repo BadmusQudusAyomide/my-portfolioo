@@ -9,28 +9,28 @@ const projects = [
     title: 'Portfolio Website',
     description: 'A clean portfolio built with Next.js and Tailwind CSS with advanced animations.',
     tags: ['Next.js', 'Tailwind', 'Framer Motion'],
-    image: '/project1.jpg',
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#'
   },
   {
     title: 'Todo App',
     description: 'Task manager with local storage support and responsive UI.',
     tags: ['React', 'TypeScript', 'LocalStorage'],
-    image: '/project2.jpg',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#'
   },
   {
     title: 'E-commerce Platform',
     description: 'Full-featured online store with cart functionality and payment integration.',
     tags: ['Next.js', 'Stripe', 'MongoDB'],
-    image: '/project3.jpg',
+    image: 'https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#'
   },
   {
     title: 'Weather Dashboard',
     description: 'Real-time weather data visualization with interactive maps.',
     tags: ['React', 'API', 'Chart.js'],
-    image: '/project4.jpg',
+    image: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#'
   },
 ];
@@ -184,13 +184,15 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-75"></div>
+                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-75 animate-pulse"></div>
                   <div className="relative bg-gray-800 rounded-2xl p-1">
                     <div className="h-64 md:h-80 w-full bg-gray-700 rounded-xl overflow-hidden">
-                      {/* Replace with your image */}
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                        <span className="text-2xl text-gray-400">Profile Image</span>
-                      </div>
+                      {/* Using local profile image */}
+                      <img 
+                        src="/1.png" 
+                        alt="Badmus Qudus Ayomide" 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
                 </div>
@@ -260,9 +262,14 @@ export default function Home() {
                   whileHover={{ y: -10 }}
                   className="group relative overflow-hidden rounded-xl bg-gray-800 border border-gray-700/50"
                 >
-                  <div className="h-48 bg-gray-700 overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20 group-hover:opacity-90 transition-opacity">
-                      <span className="text-xl text-gray-400">Project Image</span>
+                  <div className="relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-t-xl opacity-75 group-hover:opacity-100 transition-opacity blur-sm"></div>
+                    <div className="relative h-48 overflow-hidden rounded-t-xl">
+                      <img 
+                        src={project.image} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
                     </div>
                   </div>
                   <div className="p-6">

@@ -96,7 +96,7 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="text-lg md:text-xl text-purple-400 mb-4"
               >
-                Hello, I'm
+                Hello, Im
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -172,7 +172,7 @@ export default function Home() {
                 About Me
               </h2>
               <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-                I'm a passionate frontend developer with a love for building clean, user-friendly interfaces using modern technologies.
+                Im a passionate frontend developer with a love for building clean, user-friendly interfaces using modern technologies.
               </p>
             </motion.div>
 

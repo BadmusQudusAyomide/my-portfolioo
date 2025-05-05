@@ -12,28 +12,28 @@ const profileImage = 'https://images.unsplash.com/photo-1571171637578-41bc2dd41c
 
 const projects = [
   {
-    title: 'Portfolio Website',
-    description: 'A clean portfolio built with Next.js and Tailwind CSS with advanced animations.',
-    tags: ['Next.js', 'Tailwind', 'Framer Motion'],
+    title: '30 days Submission Platform',
+    description: 'A platform for submitting daily coding challenges with a leaderboard.',
+    tags: ['React', 'Node js', 'Mongo DB', 'Express js'],
     image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    link: 'https://badmusqudusay.vercel.app/',
-    github: '#'
+    link: 'https://30-day-code-w46x.vercel.app',
+    github: 'https://github.com/BadmusQudusAyomide/30-day-code'
   },
   {
-    title: 'Todo App',
-    description: 'Task manager with local storage support and responsive UI.',
-    tags: ['React', 'TypeScript', 'LocalStorage'],
+    title: 'Smart Gpa',
+    description: 'A GPA calculator Calulater with a smart algorithm to suggest course combinations and track it for the whole sclool years.',
+    tags: ['Flutter', 'LocalStorage'],
     image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#',
-    github: '#'
+    github: 'https://github.com/BadmusQudusAyomide/smartgpa'
   },
   {
-    title: 'E-commerce Platform',
-    description: 'Full-featured online store with cart functionality and payment integration.',
-    tags: ['Next.js', 'Stripe', 'MongoDB'],
+    title: 'Student Attendace System',
+    description: 'A Student Attendace website With Geolocation and Face Recognition',
+    tags: ['Php','Open Cv','Javascript'],
     image: 'https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#',
-    github: '#'
+    github:'https://github.com/BadmusQudusAyomide/ilarostudentattendance'
   },
   {
     title: 'Weather Dashboard',
@@ -42,6 +42,14 @@ const projects = [
     image: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     link: '#',
     github: '#'
+  },
+  {
+    title: 'Portfolio Website',
+    description: 'A clean portfolio built with Next.js and Tailwind CSS with advanced animations.',
+    tags: ['Next.js', 'Tailwind', 'Framer Motion'],
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    link: 'https://badmusqudusay.vercel.app/',
+    github: 'https://github.com/BadmusQudusAyomide/my-portfolioo'
   },
 ];
 

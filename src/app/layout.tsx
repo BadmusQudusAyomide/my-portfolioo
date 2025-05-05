@@ -15,8 +15,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "John Doe | Frontend Developer",
-  description: "Portfolio of John Doe, a passionate frontend developer",
+  title: "Badmus Qudus Ayomide | Full stack Developer",
+  description: "Portfolio of Badmus Qudus Ayomide,A passionate Full stack Developer"
 };
 
 export default function RootLayout({

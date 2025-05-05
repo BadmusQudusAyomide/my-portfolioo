@@ -68,6 +68,7 @@ export const metadata: Metadata = {
       follow: true,
       "max-image-preview": "large",
     },
+    
   },
   icons: {
     icon: [
@@ -95,6 +96,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "bQPghGL9pRGvrRLNXuoSsTMXJOZw5MF3aZKEjkys2O8",
+  },
+  alternates: {
+    canonical: 'https://badmusqudusayomide.vercel.app',
   },
 };
 

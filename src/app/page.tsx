@@ -7,7 +7,6 @@ import Navbar from '../components/Navbar';
 import Skills from '../components/Skills';
 import { TypeAnimation } from 'react-type-animation';
 
-// Replace these with your actual image paths in public/images/
 const profileImage = '/images/bad.jpg';
 const projectImages = [
   '/projects/30day.jpg',

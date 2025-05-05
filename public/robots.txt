@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://badmusqudusayomide.vercel.app
+
+# Sitemaps
+Sitemap: https://badmusqudusayomide.vercel.app/sitemap.xml

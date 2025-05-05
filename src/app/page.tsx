@@ -7,7 +7,7 @@ import Navbar from '../components/Navbar';
 import Skills from '../components/Skills';
 import { TypeAnimation } from 'react-type-animation';
 
-const profileImage = '/images/bad.jpg';
+const profileImage = '/projects/p.jpg';
 const projectImages = [
   '/projects/30day.jpg',
   '/projects/gpa.jpg',
@@ -420,7 +420,7 @@ export default function Home() {
 
     <div className="max-w-2xl mx-auto">
       <form 
-        action="https://formspree.io/f/YOUR_FORM_ID"
+        action="https://formspree.io/f/xpwddlaj"
         method="POST"
         className="space-y-6"
       >

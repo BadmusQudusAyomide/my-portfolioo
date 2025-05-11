@@ -21,7 +21,10 @@ export const metadata: Metadata = {
   },
   description: "Portfolio of Badmus Qudus Ayomide, a passionate full stack developer specializing in React, Next.js, and Node.js.",
   keywords: [
+    "Badmus Qudus Ayomide",
     "Badmus Qudus",
+    "Badmus",
+    "Adufe",
     "Full Stack Developer",
     "React Developer",
     "Next.js Developer",

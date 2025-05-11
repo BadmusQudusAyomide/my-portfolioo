@@ -16,7 +16,7 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Badmus Qudus | Full Stack Developer",
+    default: "Badmus Qudus Ayomide | Full Stack Developer",
     template: "%s | Badmus Qudus"
   },
   description: "Portfolio of Badmus Qudus Ayomide, a passionate full stack developer specializing in React, Next.js, and Node.js.",

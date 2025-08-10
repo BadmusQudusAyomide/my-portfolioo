@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 // Helper component for typing effect
-function TypewriterEffect({ text, delay = 50 }) {
+function TypewriterEffect({ text, delay = 50 }: { text: string; delay?: number }) {
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
@@ -27,7 +27,7 @@ function TypewriterEffect({ text, delay = 50 }) {
 }
 
 // Custom typewriter component for code
-function CodeTypewriter({ code, isActive, onComplete }) {
+function CodeTypewriter({ code, isActive, onComplete }: { code: string; isActive: boolean; onComplete?: () => void }): string {
   const [displayedCode, setDisplayedCode] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -152,7 +152,7 @@ console.log("Clean code is poetry in motion");`
   const handlePreviewTiltLeave = () => setPreviewTilt({ rx: 0, ry: 0 });
 
   // Function to safely render code with syntax highlighting
-  const renderCodeWithHighlighting = (line) => {
+  const renderCodeWithHighlighting = (line: string): string => {
     return line
       .replace(/\b(const|function|return|console|let|var)\b/g, '<span class="text-blue-400">$&</span>')
       .replace(/"/g, '<span class="text-yellow-400">"</span>')

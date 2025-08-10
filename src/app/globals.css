@@ -19,8 +19,26 @@
   }
 }
 
-body {
-  background: var(--background);
+html, body {
+  /* Allow Tailwind body background from layout.tsx to take effect */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Utility: hide scrollbars (used by navbar links container) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Animated glow rotation for conic gradients */
+@keyframes glow-rotate {
+  to { transform: rotate(360deg); }
+}
+.glow-rotate {
+  animation: glow-rotate 8s linear infinite;
+  will-change: transform;
 }

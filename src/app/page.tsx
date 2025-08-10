@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Loader from '../components/Loader';
 import Navbar from '../components/Navbar';
 import Skills from '../components/Skills';
+import About from '../components/About';
 import { TypeAnimation } from 'react-type-animation';
 
 const profileImage = '/projects/p.jpg';
@@ -108,172 +109,77 @@ export default function Home() {
 
   return (
     <AnimatePresence>
-      <div className="min-h-screen bg-gray-900 text-gray-100">
+      <div className="min-h-screen bg-transparent text-gray-100">
         <Navbar />
 
         <main>
           {/* Hero Section */}
-          <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden" aria-label="Introduction">
-            <div className="absolute inset-0 z-0 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-gray-900"></div>
-              <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-              
-              {!prefersReducedMotion && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="absolute inset-0 overflow-hidden">
-                  <motion.div
-                    animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-                    transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
-                    className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl"
-                  />
-                  <motion.div
-                    animate={{ x: [0, -40, 0], y: [0, -20, 0] }}
-                    transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", delay: 2 }}
-                    className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-pink-500/10 blur-3xl"
-                  />
-                </motion.div>
-              )}
-            </div>
-
+          <section id="home" className="relative min-h-[85vh] md:min-h-screen flex items-center overflow-hidden py-20" aria-label="Introduction">
             <div className="container mx-auto px-6 relative z-10">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-center"
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className="max-w-4xl mx-auto text-center md:text-left"
               >
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-lg md:text-xl text-purple-400 mb-4 font-mono">
-                  Hello, Im
-                </motion.p>
-
-                <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                <p className="text-sm md:text-base text-purple-300/80 font-mono tracking-wide mb-3">Hi, I’m Badmus</p>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
                   <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-                    Badmus Qudus
+                   Transforming vision into impactful digital reality.
                   </span>
                 </h1>
+                <p className="text-base sm:text-lg md:text-xl text-gray-300/90 max-w-2xl">
+                  I’m a software engineer based in Nigeria, focused on building fast, accessible, and beautiful web experiences.
+                </p>
 
-                <div className="text-lg md:text-2xl max-w-2xl mx-auto mb-8 text-gray-300">
-                  <TypeAnimation
-                    sequence={[
-                      'Frontend Developer',
-                      2000,
-                      'UI/UX Enthusiast',
-                      2000,
-                      'React Specialist',
-                      2000,
-                      'Full Stack Engineer',
-                      2000
-                    ]}
-                    wrapper="span"
-                    speed={50}
-                    repeat={Infinity}
-                    className="font-medium"
-                    aria-label="Professional roles: Frontend Developer, UI/UX Enthusiast, React Specialist, Full Stack Engineer"
-                  />
-                  <p className="mt-4 text-gray-400">Creating immersive digital experiences with modern technologies</p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                {/* CTAs */}
+                <div className="mt-8 flex flex-col sm:flex-row gap-4 md:justify-start justify-center">
                   <motion.a
-                    href="#projects"
-                    whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
-                    aria-label="View my projects"
-                    className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-medium flex items-center justify-center gap-2 min-w-[200px]"
+                    href="#contact"
+                    whileHover={{ scale: prefersReducedMotion ? 1 : 1.04 }}
+                    whileTap={{ scale: 0.98 }}
+                    aria-label="Let’s work together"
+                    className="px-7 py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30"
                   >
-                    <span>View My Work</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span>Let’s Work Together</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </motion.a>
                   <motion.a
-                    href="#contact"
-                    whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
-                    aria-label="Contact me"
-                    className="px-8 py-4 border border-purple-400 text-purple-400 rounded-lg font-medium flex items-center justify-center gap-2 min-w-[200px]"
+                    href="/resume.pdf"
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: prefersReducedMotion ? 1 : 1.04 }}
+                    whileTap={{ scale: 0.98 }}
+                    aria-label="Download my CV"
+                    className="px-7 py-3.5 border border-purple-400/70 text-purple-300 rounded-lg font-semibold flex items-center justify-center gap-2 backdrop-blur-sm bg-white/0"
                   >
-                    <span>Contact Me</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <span>Download CV</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                     </svg>
                   </motion.a>
+                </div>
+
+                {/* Social proof / quick stats */}
+                <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-400 md:justify-start justify-center">
+                  <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-purple-500"></span> 50+ Projects</div>
+                  <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-pink-500"></span> 5+ Years Learning</div>
+                  <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-indigo-500"></span> Open Source</div>
                 </div>
               </motion.div>
             </div>
           </section>
 
           {/* About Section */}
-          <section id="about" className="py-20 relative overflow-hidden" aria-label="About me">
-            <div className="container mx-auto px-6 relative">
-              <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                  About Me
-                </h2>
-                <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-                  Im Badmus Qudus Ayomide — a passionate full stack developer from Nigeria, dedicated to building elegant, functional applications that solve real-world problems.
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="flex justify-center"
-                >
-                  <div className="relative max-w-md w-full">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-75 animate-pulse"></div>
-                    <div className="relative bg-gray-800 rounded-2xl p-1 overflow-hidden">
-                      <div className="aspect-square w-full bg-gray-700 rounded-xl overflow-hidden relative">
-                        <Image 
-                          src={profileImage}
-                          alt="Badmus Qudus Ayomide - Full Stack Developer" 
-                          width={500}
-                          height={500}
-                          priority
-                          className="hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <h3 className="text-2xl font-bold mb-6 text-gray-100">My Journey</h3>
-                  <div className="space-y-8">
-                    {timeline.map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1, duration: 0.5 }}
-                        className="relative pl-10"
-                      >
-                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
-                          <div className="w-3 h-3 rounded-full bg-gray-900"></div>
-                        </div>
-                        <div className="bg-gray-800/60 p-4 rounded-lg backdrop-blur border border-gray-700/50 hover:border-pink-500/40 transition-all duration-300">
-                          <span className="text-sm text-purple-400">{item.year}</span>
-                          <h4 className="text-lg font-semibold mt-1 text-gray-100">{item.title}</h4>
-                          <p className="text-gray-400 mt-2">{item.description}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </section>
+          <About />
 
           <Skills />
 
           {/* Projects Section */}
-          <section id="projects" className="py-20 bg-gray-800/30 relative overflow-hidden" aria-label="My projects">
+          <section id="projects" className="py-20 relative overflow-hidden" aria-label="My projects">
             <div className="container mx-auto px-6 relative">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
@@ -585,7 +491,7 @@ export default function Home() {
 
         </main>
 
-        <footer className="py-20 bg-gradient-to-t from-gray-900 to-gray-800/50 backdrop-blur-lg">
+        <footer className="py-20 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
               <div className="space-y-6">

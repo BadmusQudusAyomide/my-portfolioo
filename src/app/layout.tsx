@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import ParticlesBackground from "../components/ParticlesBackground";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +18,7 @@ const robotoMono = Roboto_Mono({
 export const metadata: Metadata = {
   title: {
     default: "Badmus Qudus Ayomide | Full Stack Developer",
-    template: "%s | Badmus Qudus"
+    template: "%s | Badmus Qudus Ayomide"
   },
   description: "Portfolio of Badmus Qudus Ayomide, a passionate full stack developer specializing in React, Next.js, and Node.js.",
   keywords: [
@@ -167,7 +168,8 @@ export default function RootLayout({
           })}
         </script>
       </head>
-      <body className={`${inter.className} bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 antialiased min-h-screen`}>
+      <body className={`${inter.className} bg-[#0b0a1f] text-gray-100 antialiased min-h-screen relative`}>
+        <ParticlesBackground />
         {children}
       </body>
     </html>

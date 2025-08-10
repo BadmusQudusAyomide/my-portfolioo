@@ -1,147 +1,132 @@
-'use client';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 
-const navItems = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Skills', href: '#skills' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Contact', href: '#contact' },
+'use client';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { House, User as UserIcon, Code as CodeIcon, FolderSimple, EnvelopeSimple } from 'phosphor-react';
+
+type IconComponent = React.ComponentType<any>;
+const navItems: { name: string; href: string; Icon: IconComponent }[] = [
+  { name: 'Home', href: '#home', Icon: House },
+  { name: 'About', href: '#about', Icon: UserIcon },
+  { name: 'Skills', href: '#skills', Icon: CodeIcon },
+  { name: 'Projects', href: '#projects', Icon: FolderSimple },
+  { name: 'Contact', href: '#contact', Icon: EnvelopeSimple },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const [currentHash, setCurrentHash] = useState<string>('');
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
+    const handleHashChange = () => {
+      setCurrentHash(window.location.hash || '#home');
+    };
+
+    // initialize
+    handleHashChange();
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
   const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
+    // kept for anchor clicks; no-op now that menu is always visible
   };
 
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled ? 'py-2 bg-gray-900/95 backdrop-blur-md shadow-xl' : 'py-4 bg-gray-900/80 backdrop-blur-sm'
-        }`}
+        className="fixed inset-x-0 top-0 z-50 px-3 sm:px-4"
       >
-        <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-          <motion.a
-            href="#home"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent"
-            onClick={closeMobileMenu}
+        <div
+          className={`mx-auto max-w-max transition-all ${scrolled ? 'mt-2' : 'mt-4'}`}
+        >
+          {/* Centered, fully rounded glass bar */}
+          <div
+            className={`mx-auto inline-flex items-center justify-center gap-2 sm:gap-3 rounded-full border border-white/15 bg-white/10 backdrop-blur-2xl shadow-lg shadow-black/20 px-2.5 sm:px-3 py-2 
+            dark:bg-gray-900/50 dark:border-white/10 supports-[backdrop-filter]:bg-white/10`}
           >
-            Badmus Qudus
-          </motion.a>
+            {/* Icon-only items with tooltip; distance-based scaling */}
+            <div className="flex-1">
+              <div className="flex items-center justify-center gap-2 sm:gap-3 min-w-max">
+                {navItems.map((item, index) => {
+                  const active = currentHash === item.href;
+                  const isHovered = hoveredIndex === index;
+                  const distance = hoveredIndex === null ? Infinity : Math.abs(index - (hoveredIndex ?? 0));
+                  const scale =
+                    hoveredIndex === null
+                      ? 1.0
+                      : distance === 0
+                      ? 1.35
+                      : distance === 1
+                      ? 1.15
+                      : distance === 2
+                      ? 1.06
+                      : 1.0;
+                  const { Icon } = item;
+                  return (
+                    <motion.a
+                      key={item.name}
+                      href={item.href}
+                      aria-label={item.name}
+                      className={`group relative grid place-items-center w-12 h-12 rounded-full ring-1 ring-white/20 bg-white/10 text-white overflow-visible select-none 
+                        ${active ? 'ring-2 ring-cyan-400/60' : ''}`}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0, scale }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 22, delay: 0.12 + index * 0.06 }}
+                      onHoverStart={() => setHoveredIndex(index)}
+                      onHoverEnd={() => setHoveredIndex(null)}
+                      onFocus={() => setHoveredIndex(index)}
+                      onBlur={() => setHoveredIndex(null)}
+                      onClick={closeMobileMenu}
+                    >
+                      {/* Icon (white, bold) */}
+                      <span className="relative z-10 text-white">
+                        <Icon size={22} weight="bold" color="#ffffff" className="transition-transform duration-300" style={{ transform: isHovered ? 'scale(1.15)' : 'scale(1.0)' }} />
+                      </span>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-6 lg:space-x-8">
-            {navItems.map((item, index) => (
-              <motion.div key={item.name} className="relative">
-                <motion.a
-                  href={item.href}
-                  className={`relative px-1 py-2 text-sm font-medium transition-colors ${
-                    pathname === item.href ? 'text-purple-400' : 'text-gray-300 hover:text-white'
-                  }`}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {item.name}
-                  {pathname === item.href && (
-                    <motion.span
-                      layoutId="activeNav"
-                      className="absolute left-0 bottom-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </motion.a>
-              </motion.div>
-            ))}
+                      {/* Tooltip */}
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                          animate={{ opacity: 1, y: -4, scale: 1 }}
+                          exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                          transition={{ duration: 0.18 }}
+                          className="pointer-events-none absolute -top-2 translate-y-[-100%] px-2 py-1 rounded-md text-[10px] font-medium text-white 
+                            shadow-lg border border-white/15 bg-gray-900/80 backdrop-blur-md"
+                        >
+                          {item.name}
+                        </motion.div>
+                      )}
+
+                      {/* Gradient glow behind icon */}
+                      <span className={`pointer-events-none absolute inset-0 rounded-full blur-lg transition-opacity duration-300 glow-rotate ${
+                        isHovered || active ? 'opacity-60' : 'opacity-0'
+                      }`} style={{
+                        background: 'conic-gradient(from 180deg at 50% 50%, rgba(0,220,255,0.95), rgba(124,58,237,0.95), rgba(0,132,255,0.95), rgba(0,220,255,0.95))'
+                      }} />
+                    </motion.a>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-
-          {/* Mobile Menu Button */}
-          <motion.button
-            onClick={toggleMobileMenu}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="md:hidden p-2 rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </motion.button>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-20 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur-lg shadow-2xl md:hidden"
-          >
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              exit={{ height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="px-6 py-4 space-y-4">
-                {navItems.map((item) => (
-                  <motion.a
-                    key={item.name}
-                    href={item.href}
-                    onClick={closeMobileMenu}
-                    className={`block px-3 py-3 rounded-lg text-base font-medium transition-colors ${
-                      pathname === item.href
-                        ? 'bg-gray-800 text-purple-400'
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                    whileHover={{ x: 5 }}
-                  >
-                    {item.name}
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* No mobile dropdown; links are always visible in the top bar */}
+
     </>
   );
 }

@@ -2,9 +2,9 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { House, User as UserIcon, Code as CodeIcon, FolderSimple, EnvelopeSimple } from 'phosphor-react';
+import { House, User as UserIcon, Code as CodeIcon, FolderSimple, EnvelopeSimple, IconProps } from 'phosphor-react';
 
-type IconComponent = React.ComponentType<any>;
+type IconComponent = React.ComponentType<IconProps>;
 const navItems: { name: string; href: string; Icon: IconComponent }[] = [
   { name: 'Home', href: '#home', Icon: House },
   { name: 'About', href: '#about', Icon: UserIcon },

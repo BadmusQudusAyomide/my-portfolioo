@@ -184,7 +184,7 @@ console.log("Clean code is poetry in motion");`
 
           <div className="text-lg md:text-xl text-gray-300/90 leading-relaxed space-y-6">
             <p>
-              Imagine a fusion where <span className="text-purple-300">logic dances</span> with <span className="text-pink-300">artistic vision</span>—that's the space I inhabit.
+              Imagine a fusion where <span className="text-purple-300">logic dances</span> with <span className="text-pink-300">artistic vision</span>—that&apos;s the space I inhabit.
             </p>
 
             <div style={{ perspective: '600px' }}>
@@ -195,9 +195,9 @@ console.log("Clean code is poetry in motion");`
                 className="font-mono text-sm md:text-base border border-gray-700/50 bg-gray-900/30 p-4 rounded-lg backdrop-blur transform-gpu transition-transform duration-300 will-change-transform hover:shadow-[0_20px_40px_-10px_rgba(168,85,247,0.45)] hover:scale-[1.03]"
                 style={{ transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)` }}
               >
-                <span className="text-emerald-300">//</span> Building digital experiences that <br />
-                <span className="text-emerald-300">//</span> feel alive, responsive, and <br />
-                <span className="text-emerald-300">//</span> deeply human in their execution
+                <span className="text-emerald-300">{'//'}</span> Building digital experiences that <br />
+                <span className="text-emerald-300">{'//'}</span> feel alive, responsive, and <br />
+                <span className="text-emerald-300">{'//'}</span> deeply human in their execution
               </p>
             </div>
 

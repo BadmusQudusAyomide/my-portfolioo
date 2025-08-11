@@ -1,6 +1,33 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-const skillsData = [
+interface Skill {
+  name: string;
+  x: number;
+  y: number;
+  level: number;
+  type: string;
+  color: string;
+  connections: string[];
+  magnetism: number;
+}
+
+interface MagneticOrbProps {
+  skill: Skill;
+  index: number;
+  hoveredSkill: string | null;
+  setHoveredSkill: (name: string | null) => void;
+  mousePos: { x: number; y: number } | null;
+  containerRect: DOMRect | null;
+}
+
+interface LiveConnectionProps {
+  from: string;
+  to: string;
+  isActive: boolean;
+  skillsMap: { [key: string]: Skill };
+}
+
+const skillsData: Skill[] = [
   { name: 'React', x: 20, y: 30, level: 90, type: 'frontend', color: '#61DAFB', connections: ['JavaScript', 'HTML/CSS'], magnetism: 0.8 },
   { name: 'JavaScript', x: 45, y: 25, level: 95, type: 'frontend', color: '#F7DF1E', connections: ['React', 'Node.js'], magnetism: 1.0 },
   { name: 'HTML/CSS', x: 15, y: 60, level: 98, type: 'frontend', color: '#E34F26', connections: ['React', 'Tailwind'], magnetism: 0.9 },
@@ -18,8 +45,8 @@ const skillsData = [
   { name: 'Webpack', x: 40, y: 70, level: 70, type: 'tools', color: '#8DD6F9', connections: [], magnetism: 0.5 }
 ];
 
-const MagneticOrb = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, mousePos, containerRect }) => {
-  const orbRef = useRef(null);
+const MagneticOrb: React.FC<MagneticOrbProps> = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, mousePos, containerRect }) => {
+  const orbRef = useRef<HTMLDivElement>(null);
   const [orbPos, setOrbPos] = useState({ x: skill.x, y: skill.y });
   const [isFloating, setIsFloating] = useState(true);
 
@@ -63,7 +90,7 @@ const MagneticOrb = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, m
   return (
     <div
       ref={orbRef}
-      className="absolute cursor-pointer will-change-transform"
+      className="absolute cursor-pointer"
       style={{
         left: `${orbPos.x}%`,
         top: `${orbPos.y}%`,
@@ -178,21 +205,25 @@ const MagneticOrb = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, m
 MagneticOrb.displayName = 'MagneticOrb';
 
 // Animated connection lines that pulse and spark
-const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
+const LiveConnection: React.FC<LiveConnectionProps> = React.memo(({ from, to, isActive, skillsMap }) => {
   const fromSkill = skillsMap[from];
   const toSkill = skillsMap[to];
 
   if (!fromSkill || !toSkill) return null;
 
+  const gradientId = `grad-${from}-${to}`;
+  const glowId = `glow-${from}-${to}`;
+  const pathId = `path-${from}-${to}`;
+
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 50 }}>
       <defs>
-        <linearGradient id={`grad-${from}-${to}`} x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor={fromSkill.color} stopOpacity={isActive ? 1 : 0.4} />
           <stop offset="50%" stopColor="#ffffff" stopOpacity={isActive ? 0.8 : 0.2} />
           <stop offset="100%" stopColor={toSkill.color} stopOpacity={isActive ? 1 : 0.4} />
         </linearGradient>
-        <filter id={`glow-${from}-${to}`}>
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="3" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
@@ -206,9 +237,9 @@ const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
         y1={`${fromSkill.y}%`}
         x2={`${toSkill.x}%`}
         y2={`${toSkill.y}%`}
-        stroke={`url(#grad-${from}-${to})`}
+        stroke={`url(#${gradientId})`}
         strokeWidth={isActive ? 3 : 1}
-        filter={isActive ? `url(#glow-${from}-${to})` : 'none'}
+        filter={isActive ? `url(#${glowId})` : 'none'}
         strokeDasharray={isActive ? "none" : "8,4"}
         className="transition-all duration-500"
         style={{
@@ -221,19 +252,19 @@ const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
         <>
           <circle r="4" fill={fromSkill.color} opacity="0.9">
             <animateMotion dur="2s" repeatCount="indefinite">
-              <mpath xlinkHref={`#path-${from}-${to}`} />
+              <mpath xlinkHref={`#${pathId}`} />
             </animateMotion>
           </circle>
           <circle r="2" fill="#ffffff" opacity="1">
             <animateMotion dur="2s" repeatCount="indefinite" begin="0.3s">
-              <mpath xlinkHref={`#path-${from}-${to}`} />
+              <mpath xlinkHref={`#${pathId}`} />
             </animateMotion>
           </circle>
         </>
       )}
 
       <path
-        id={`path-${from}-${to}`}
+        id={pathId}
         d={`M ${fromSkill.x}% ${fromSkill.y}% L ${toSkill.x}% ${toSkill.y}%`}
         fill="none"
         opacity="0"
@@ -244,16 +275,16 @@ const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
 LiveConnection.displayName = 'LiveConnection';
 
 export default function MagneticSkillsOrb() {
-  const [hoveredSkill, setHoveredSkill] = useState(null);
+  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState('all');
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [containerRect, setContainerRect] = useState(null);
-  const containerRef = useRef(null);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [showIntroAnimation, setShowIntroAnimation] = useState(true);
 
   // Track mouse for magnetic effect
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
@@ -289,7 +320,7 @@ export default function MagneticSkillsOrb() {
     return skillsData.reduce((acc, skill) => {
       acc[skill.name] = skill;
       return acc;
-    }, {});
+    }, {} as { [key: string]: Skill });
   }, []);
 
   const activeConnections = useMemo(() => {
@@ -333,13 +364,13 @@ export default function MagneticSkillsOrb() {
 
           {/* Magnetic filters */}
           <div className="flex justify-center space-x-4 mt-8 flex-wrap gap-2">
-            {['all', 'frontend', 'backend', 'tools'].map(type => (
+            {(['all', 'frontend', 'backend', 'tools'] as const).map(type => (
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
                 className={`px-6 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-110 ${selectedType === type
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50 animate-pulse'
-                    : 'bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 border border-gray-600'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50 animate-pulse'
+                  : 'bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 border border-gray-600'
                   }`}
                 style={{
                   boxShadow: selectedType === type ? `0 0 30px #8B5CF6` : 'none'

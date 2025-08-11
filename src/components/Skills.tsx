@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 const skillsData = [
   { name: 'React', x: 20, y: 30, level: 90, type: 'frontend', color: '#61DAFB', connections: ['JavaScript', 'HTML/CSS'], magnetism: 0.8 },
@@ -175,6 +175,7 @@ const MagneticOrb = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, m
     </div>
   );
 });
+MagneticOrb.displayName = 'MagneticOrb';
 
 // Animated connection lines that pulse and spark
 const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
@@ -182,10 +183,6 @@ const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
   const toSkill = skillsMap[to];
 
   if (!fromSkill || !toSkill) return null;
-
-  const distance = Math.sqrt(
-    Math.pow(toSkill.x - fromSkill.x, 2) + Math.pow(toSkill.y - fromSkill.y, 2)
-  );
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 50 }}>
@@ -244,6 +241,7 @@ const LiveConnection = React.memo(({ from, to, isActive, skillsMap }) => {
     </svg>
   );
 });
+LiveConnection.displayName = 'LiveConnection';
 
 export default function MagneticSkillsOrb() {
   const [hoveredSkill, setHoveredSkill] = useState(null);

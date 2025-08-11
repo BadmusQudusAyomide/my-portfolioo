@@ -281,6 +281,8 @@ export default function MagneticSkillsOrb() {
   const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showIntroAnimation, setShowIntroAnimation] = useState(true);
+  // Client-only starfield to prevent SSR hydration mismatch
+  const [stars, setStars] = useState<Array<{ left: string; top: string; anim: string }>>([]);
 
   // Track mouse for magnetic effect
   useEffect(() => {
@@ -310,6 +312,19 @@ export default function MagneticSkillsOrb() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Generate starfield on client after mount to avoid SSR randomness
+  useEffect(() => {
+    const count = 50;
+    const generated = Array.from({ length: count }).map(() => {
+      const left = `${Math.random() * 100}%`;
+      const top = `${Math.random() * 100}%`;
+      const duration = 2 + Math.random() * 4;
+      const delay = Math.random() * 2;
+      return { left, top, anim: `twinkle ${duration}s ease-in-out infinite ${delay}s` };
+    });
+    setStars(generated);
+  }, []);
+
   const filteredSkills = useMemo(() => {
     return selectedType === 'all'
       ? skillsData
@@ -333,15 +348,11 @@ export default function MagneticSkillsOrb() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black relative overflow-hidden">
       {/* Animated particle background */}
       <div className="absolute inset-0">
-        {Array.from({ length: 50 }).map((_, i) => (
+        {stars.map((s, i) => (
           <div
             key={i}
             className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
-            }}
+            style={{ left: s.left, top: s.top, animation: s.anim }}
           />
         ))}
       </div>

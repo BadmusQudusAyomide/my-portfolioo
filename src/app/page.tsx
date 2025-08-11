@@ -10,15 +10,23 @@ import Projects from '../components/Projects';
 // Projects data moved into components/Projects.tsx
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    setPrefersReducedMotion(
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    );
-    const timer = setTimeout(() => setLoading(false), 2500);
-    return () => clearTimeout(timer);
+    try {
+      if (typeof window !== 'undefined' && 'matchMedia' in window) {
+        setPrefersReducedMotion(
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        );
+      }
+    } catch (e) {
+      // ignore
+    }
+    // If you want a brief loader, set loading true then clear it
+    // setLoading(true);
+    // const timer = setTimeout(() => setLoading(false), 1200);
+    // return () => clearTimeout(timer);
   }, []);
 
   if (loading) return <Loader />;

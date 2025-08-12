@@ -73,7 +73,7 @@ export default function Contact({ prefersReducedMotion }: ContactProps) {
                         transition={{ duration: 0.6 }}
                     >
                         <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-rose-500 bg-clip-text text-transparent">
-                            Let's Connect
+                            Let&#39;s Connect
                         </span>
                     </motion.h2>
 
@@ -83,7 +83,7 @@ export default function Contact({ prefersReducedMotion }: ContactProps) {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        Have a project in mind or want to collaborate? I'd love to hear from you!
+                        Have a project in mind or want to collaborate? I&#39;d love to hear from you!
                     </motion.p>
                 </div>
 
@@ -148,7 +148,7 @@ export default function Contact({ prefersReducedMotion }: ContactProps) {
                                     type="text"
                                     id="subject"
                                     className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-100 transition-all duration-200 peer"
-                                    placeholder="What's this about?"
+                                    placeholder="What&#39;s this about?"
                                 />
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 peer-focus:w-full"></div>
                             </div>

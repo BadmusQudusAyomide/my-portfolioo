@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Helper component for typing effect
 function TypewriterEffect({ text, delay = 50 }: { text: string; delay?: number }) {
@@ -28,7 +28,8 @@ function TypewriterEffect({ text, delay = 50 }: { text: string; delay?: number }
 }
 
 // Simplified and optimized code display
-function OptimizedCodeDisplay({ codeSnippets }: { codeSnippets: any[] }) {
+type CodeSnippet = { title: string; code: string };
+function OptimizedCodeDisplay({ codeSnippets }: { codeSnippets: CodeSnippet[] }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 

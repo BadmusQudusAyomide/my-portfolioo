@@ -82,7 +82,6 @@ export default function Projects({
     prefersReducedMotion?: boolean;
 }) {
     const [activeFilter, setActiveFilter] = useState('All');
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     const filteredProjects = projects.filter(project => {
         if (activeFilter === 'All') return true;
@@ -162,8 +161,6 @@ export default function Projects({
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                             whileHover={prefersReducedMotion ? {} : { y: -10 }}
-                            onHoverStart={() => !prefersReducedMotion && setHoveredIndex(index)}
-                            onHoverEnd={() => !prefersReducedMotion && setHoveredIndex(null)}
                             className="group relative cursor-pointer"
                         >
                             {/* Image Container */}

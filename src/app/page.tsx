@@ -12,7 +12,7 @@ import Footer from '../components/Footer';
 // Projects data moved into components/Projects.tsx
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Home() {
           window.matchMedia('(prefers-reduced-motion: reduce)').matches
         );
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
     // If you want a brief loader, set loading true then clear it

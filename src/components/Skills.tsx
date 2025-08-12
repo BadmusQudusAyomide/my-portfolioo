@@ -157,7 +157,7 @@ const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
     }> = [];
 
     // Create particles based on skills
-    skills.forEach((skill, index) => {
+    skills.forEach((skill) => {
       for (let i = 0; i < Math.floor(skill.level / 10); i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -338,14 +338,14 @@ export default function CreativeSkillsPortfolio() {
 
           {/* View selector */}
           <div className="flex bg-gray-800/50 backdrop-blur-sm rounded-full p-2 border border-gray-700">
-            {[
+            {([
               { id: 'hexagon', icon: '⬡', label: 'Hexagon' },
               { id: 'radar', icon: '📡', label: 'Radar' },
               { id: 'timeline', icon: '📈', label: 'Timeline' }
-            ].map(view => (
+            ] as const).map(view => (
               <button
                 key={view.id}
-                onClick={() => setActiveView(view.id as any)}
+                onClick={() => setActiveView(view.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeView === view.id
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
                     : 'text-gray-300 hover:text-white'

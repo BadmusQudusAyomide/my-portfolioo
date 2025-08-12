@@ -1,496 +1,447 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface Skill {
   name: string;
-  x: number;
-  y: number;
   level: number;
-  type: string;
+  category: string;
   color: string;
-  connections: string[];
-  magnetism: number;
-}
-
-interface MagneticOrbProps {
-  skill: Skill;
-  index: number;
-  hoveredSkill: string | null;
-  setHoveredSkill: (name: string | null) => void;
-  mousePos: { x: number; y: number } | null;
-  containerRect: DOMRect | null;
-}
-
-interface LiveConnectionProps {
-  from: string;
-  to: string;
-  isActive: boolean;
-  skillsMap: { [key: string]: Skill };
+  description: string;
+  years: number;
 }
 
 const skillsData: Skill[] = [
-  { name: 'React', x: 20, y: 30, level: 90, type: 'frontend', color: '#61DAFB', connections: ['JavaScript', 'HTML/CSS'], magnetism: 0.8 },
-  { name: 'JavaScript', x: 45, y: 25, level: 95, type: 'frontend', color: '#F7DF1E', connections: ['React', 'Node.js'], magnetism: 1.0 },
-  { name: 'HTML/CSS', x: 15, y: 60, level: 98, type: 'frontend', color: '#E34F26', connections: ['React', 'Tailwind'], magnetism: 0.9 },
-  { name: 'Next.js', x: 35, y: 15, level: 85, type: 'frontend', color: '#000000', connections: ['React'], magnetism: 0.7 },
-  { name: 'Tailwind', x: 25, y: 75, level: 90, type: 'frontend', color: '#06B6D4', connections: ['HTML/CSS'], magnetism: 0.6 },
+  { name: 'React', level: 90, category: 'Frontend', color: '#61DAFB', description: 'Building dynamic user interfaces', years: 4 },
+  { name: 'JavaScript', level: 95, category: 'Frontend', color: '#F7DF1E', description: 'Core language mastery', years: 5 },
+  { name: 'TypeScript', level: 85, category: 'Frontend', color: '#3178C6', description: 'Type-safe development', years: 3 },
+  { name: 'Next.js', level: 88, category: 'Frontend', color: '#000000', description: 'Full-stack React framework', years: 2 },
+  { name: 'CSS/SASS', level: 92, category: 'Frontend', color: '#CC6699', description: 'Advanced styling & animations', years: 5 },
+  { name: 'Tailwind CSS', level: 88, category: 'Frontend', color: '#38BDF8', description: 'Utility-first CSS framework', years: 2 },
 
-  { name: 'Node.js', x: 75, y: 40, level: 85, type: 'backend', color: '#339933', connections: ['JavaScript', 'Express'], magnetism: 0.8 },
-  { name: 'Express', x: 85, y: 25, level: 80, type: 'backend', color: '#68217A', connections: ['Node.js'], magnetism: 0.7 },
-  { name: 'MongoDB', x: 65, y: 65, level: 75, type: 'backend', color: '#47A248', connections: ['Node.js'], magnetism: 0.6 },
-  { name: 'REST APIs', x: 90, y: 55, level: 88, type: 'backend', color: '#FF6B35', connections: ['Express'], magnetism: 0.5 },
+  { name: 'Node.js', level: 85, category: 'Backend', color: '#339933', description: 'Server-side JavaScript', years: 3 },
+  { name: 'MongoDB', level: 75, category: 'Backend', color: '#47A248', description: 'NoSQL database design', years: 2 },
 
-  { name: 'Git', x: 50, y: 85, level: 92, type: 'tools', color: '#F05032', connections: ['VS Code'], magnetism: 0.7 },
-  { name: 'VS Code', x: 60, y: 90, level: 95, type: 'tools', color: '#007ACC', connections: ['Git'], magnetism: 0.8 },
-  { name: 'Figma', x: 80, y: 80, level: 85, type: 'tools', color: '#F24E1E', connections: [], magnetism: 0.6 },
-  { name: 'Webpack', x: 40, y: 70, level: 70, type: 'tools', color: '#8DD6F9', connections: [], magnetism: 0.5 }
+  { name: 'Figma', level: 90, category: 'Design', color: '#F24E1E', description: 'UI/UX design & prototyping', years: 4 },
+  { name: 'Three.js', level: 70, category: 'Creative', color: '#000000', description: '3D web experiences', years: 1 },
 ];
 
-const MagneticOrb: React.FC<MagneticOrbProps> = React.memo(({ skill, index, hoveredSkill, setHoveredSkill, mousePos, containerRect }) => {
-  const orbRef = useRef<HTMLDivElement>(null);
-  const [orbPos, setOrbPos] = useState({ x: skill.x, y: skill.y });
-  const [isFloating, setIsFloating] = useState(true);
+const CreativeSkillCard: React.FC<{ skill: Skill; index: number; isVisible: boolean }> = ({
+  skill,
+  index,
+  isVisible
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [animationDelay, setAnimationDelay] = useState(0);
 
-  // Calculate magnetic attraction to cursor
   useEffect(() => {
-    if (!mousePos || !containerRect) return;
-
-    const orbElement = orbRef.current;
-    if (!orbElement) return;
-
-    const orbRect = orbElement.getBoundingClientRect();
-    const orbCenterX = orbRect.left + orbRect.width / 2;
-    const orbCenterY = orbRect.top + orbRect.height / 2;
-
-    const distance = Math.sqrt(
-      Math.pow(mousePos.x - orbCenterX, 2) + Math.pow(mousePos.y - orbCenterY, 2)
-    );
-
-    // Magnetic attraction within 150px
-    if (distance < 150) {
-      const pullStrength = (150 - distance) / 150 * skill.magnetism * 0.3;
-      const angle = Math.atan2(mousePos.y - orbCenterY, mousePos.x - orbCenterX);
-
-      const newX = skill.x + (Math.cos(angle) * pullStrength * 5);
-      const newY = skill.y + (Math.sin(angle) * pullStrength * 5);
-
-      setOrbPos({ x: newX, y: newY });
-      setIsFloating(false);
-    } else {
-      // Return to original position
-      setOrbPos({ x: skill.x, y: skill.y });
-      setIsFloating(true);
-    }
-  }, [mousePos, containerRect, skill.x, skill.y, skill.magnetism]);
-
-  const isHovered = hoveredSkill === skill.name;
-  const isConnected = hoveredSkill && skill.connections.includes(hoveredSkill);
-  const shouldGlow = isHovered || isConnected;
-  const orbSize = 50 + (skill.level * 0.4);
+    setAnimationDelay(index * 150);
+  }, [index]);
 
   return (
     <div
-      ref={orbRef}
-      className="absolute cursor-pointer"
-      style={{
-        left: `${orbPos.x}%`,
-        top: `${orbPos.y}%`,
-        transform: `translate(-50%, -50%) scale(${isHovered ? 1.4 : shouldGlow ? 1.2 : 1})`,
-        zIndex: isHovered ? 1000 : 100 + skill.level,
-        transition: isFloating ? 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'transform 0.3s ease-out',
-      }}
-      onMouseEnter={() => setHoveredSkill(skill.name)}
-      onMouseLeave={() => setHoveredSkill(null)}
+      className={`relative group cursor-pointer transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+        }`}
+      style={{ transitionDelay: `${animationDelay}ms` }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Always visible pulsing glow */}
-      <div
-        className="absolute inset-0 rounded-full animate-pulse"
-        style={{
-          width: orbSize + 40,
-          height: orbSize + 40,
-          background: `radial-gradient(circle, ${skill.color}40 0%, ${skill.color}20 40%, transparent 70%)`,
-          transform: 'translate(-50%, -50%)',
-          left: '50%',
-          top: '50%',
-          animationDuration: `${2 + index * 0.2}s`,
-        }}
-      />
-
-      {/* Intense hover glow */}
-      {shouldGlow && (
+      {/* Hexagonal container */}
+      <div className="relative w-48 h-48 mx-auto">
+        {/* Background hexagon */}
         <div
-          className="absolute inset-0 rounded-full animate-ping"
+          className="absolute inset-0 transition-all duration-500 transform hover:scale-110"
           style={{
-            width: orbSize + 60,
-            height: orbSize + 60,
-            background: `radial-gradient(circle, ${skill.color}60 0%, transparent 70%)`,
-            transform: 'translate(-50%, -50%)',
-            left: '50%',
-            top: '50%',
-          }}
-        />
-      )}
-
-      {/* Main orb with breathing effect */}
-      <div
-        className="relative rounded-full border-2 flex items-center justify-center"
-        style={{
-          width: orbSize,
-          height: orbSize,
-          backgroundColor: `${skill.color}25`,
-          borderColor: skill.color,
-          boxShadow: `
-            inset 0 0 30px ${skill.color}60,
-            0 0 30px ${skill.color}80,
-            0 0 ${shouldGlow ? 50 : 20}px ${skill.color}
-          `,
-          animation: `breathe-${index} 3s ease-in-out infinite`,
-        }}
-      >
-        {/* Animated energy core */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: '40%',
-            height: '40%',
-            backgroundColor: skill.color,
-            animation: `spin 4s linear infinite, pulse 2s ease-in-out infinite alternate`,
-            boxShadow: `0 0 20px ${skill.color}`
+            background: `linear-gradient(135deg, ${skill.color}20, ${skill.color}40)`,
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+            filter: isHovered ? 'blur(0px)' : 'blur(1px)',
           }}
         />
 
-        {/* Skill level orbital ring */}
+        {/* Animated border */}
         <div
-          className="absolute inset-0 rounded-full border-2"
+          className="absolute inset-1 transition-all duration-500"
           style={{
-            borderColor: 'transparent',
-            borderTopColor: skill.color,
-            borderRightColor: skill.level > 50 ? skill.color : 'transparent',
-            borderBottomColor: skill.level > 75 ? skill.color : 'transparent',
-            borderLeftColor: skill.level > 25 ? skill.color : 'transparent',
-            animation: `orbit 6s linear infinite`,
-            opacity: 0.8
+            background: `conic-gradient(from ${isHovered ? '360deg' : '0deg'}, ${skill.color}, transparent, ${skill.color})`,
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+            animation: isHovered ? 'spin 3s linear infinite' : 'none',
           }}
         />
-      </div>
 
-      {/* Always visible skill name with typewriter effect */}
-      <div
-        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-3 transition-all duration-300"
-        style={{
-          opacity: shouldGlow ? 1 : 0.8,
-          transform: `translateX(-50%) scale(${shouldGlow ? 1.1 : 1})`
-        }}
-      >
+        {/* Inner content area */}
         <div
-          className="px-3 py-1 rounded-full text-sm font-bold text-white backdrop-blur-sm border whitespace-nowrap"
+          className="absolute inset-3 bg-gray-900 flex flex-col items-center justify-center text-center p-4"
           style={{
-            backgroundColor: `${skill.color}30`,
-            borderColor: skill.color,
-            boxShadow: `0 0 15px ${skill.color}50`,
-            textShadow: `0 0 10px ${skill.color}`
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
           }}
         >
-          {skill.name}
+          {/* Skill level visualization */}
+          <div className="relative w-16 h-16 mb-2">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+              <circle
+                cx="32" cy="32" r="28"
+                fill="none"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="4"
+              />
+              <circle
+                cx="32" cy="32" r="28"
+                fill="none"
+                stroke={skill.color}
+                strokeWidth="4"
+                strokeDasharray={`${(skill.level / 100) * 175.9} 175.9`}
+                strokeLinecap="round"
+                className="transition-all duration-1000"
+                style={{
+                  animation: isVisible ? 'draw-circle 2s ease-out forwards' : 'none',
+                  animationDelay: `${animationDelay + 500}ms`,
+                }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">{skill.level}%</span>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-bold text-white mb-1">{skill.name}</h3>
+          <p className="text-xs text-gray-400 text-center leading-tight">
+            {skill.description}
+          </p>
+          <div className="text-xs text-gray-500 mt-1">
+            {skill.years} year{skill.years > 1 ? 's' : ''}
+          </div>
         </div>
-        <div
-          className="text-center text-xs text-gray-300 mt-1 font-semibold"
-          style={{ textShadow: `0 0 5px ${skill.color}` }}
-        >
-          {skill.level}% mastery
-        </div>
+
+        {/* Floating particles */}
+        {isHovered && (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 rounded-full animate-ping"
+                style={{
+                  backgroundColor: skill.color,
+                  top: `${20 + i * 10}%`,
+                  left: `${10 + i * 15}%`,
+                  animationDelay: `${i * 200}ms`,
+                  animationDuration: '1.5s',
+                }}
+              />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
-});
-MagneticOrb.displayName = 'MagneticOrb';
+};
 
-// Animated connection lines that pulse and spark
-const LiveConnection: React.FC<LiveConnectionProps> = React.memo(({ from, to, isActive, skillsMap }) => {
-  const fromSkill = skillsMap[from];
-  const toSkill = skillsMap[to];
+const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  if (!fromSkill || !toSkill) return null;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  const gradientId = `grad-${from}-${to}`;
-  const glowId = `glow-${from}-${to}`;
-  const pathId = `path-${from}-${to}`;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      color: string;
+      size: number;
+    }> = [];
+
+    // Create particles based on skills
+    skills.forEach((skill, index) => {
+      for (let i = 0; i < Math.floor(skill.level / 10); i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          color: skill.color,
+          size: Math.random() * 2 + 1,
+        });
+      }
+    });
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle, index) => {
+        // Update position
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        // Bounce off edges
+        if (particle.x <= 0 || particle.x >= canvas.width) particle.vx *= -1;
+        if (particle.y <= 0 || particle.y >= canvas.height) particle.vy *= -1;
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color + '40';
+        ctx.fill();
+
+        // Connect nearby particles
+        particles.slice(index + 1).forEach(otherParticle => {
+          const dx = particle.x - otherParticle.x;
+          const dy = particle.y - otherParticle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(otherParticle.x, otherParticle.y);
+            ctx.strokeStyle = particle.color + '20';
+            ctx.stroke();
+          }
+        });
+      });
+
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+  }, [skills]);
 
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 50 }}>
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={fromSkill.color} stopOpacity={isActive ? 1 : 0.4} />
-          <stop offset="50%" stopColor="#ffffff" stopOpacity={isActive ? 0.8 : 0.2} />
-          <stop offset="100%" stopColor={toSkill.color} stopOpacity={isActive ? 1 : 0.4} />
-        </linearGradient>
-        <filter id={glowId}>
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      <line
-        x1={`${fromSkill.x}%`}
-        y1={`${fromSkill.y}%`}
-        x2={`${toSkill.x}%`}
-        y2={`${toSkill.y}%`}
-        stroke={`url(#${gradientId})`}
-        strokeWidth={isActive ? 3 : 1}
-        filter={isActive ? `url(#${glowId})` : 'none'}
-        strokeDasharray={isActive ? "none" : "8,4"}
-        className="transition-all duration-500"
-        style={{
-          animation: isActive ? `pulse-line 1.5s ease-in-out infinite alternate` : 'none'
-        }}
-      />
-
-      {/* Energy particle traveling along line */}
-      {isActive && (
-        <>
-          <circle r="4" fill={fromSkill.color} opacity="0.9">
-            <animateMotion dur="2s" repeatCount="indefinite">
-              <mpath xlinkHref={`#${pathId}`} />
-            </animateMotion>
-          </circle>
-          <circle r="2" fill="#ffffff" opacity="1">
-            <animateMotion dur="2s" repeatCount="indefinite" begin="0.3s">
-              <mpath xlinkHref={`#${pathId}`} />
-            </animateMotion>
-          </circle>
-        </>
-      )}
-
-      <path
-        id={pathId}
-        d={`M ${fromSkill.x}% ${fromSkill.y}% L ${toSkill.x}% ${toSkill.y}%`}
-        fill="none"
-        opacity="0"
-      />
-    </svg>
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
+    />
   );
-});
-LiveConnection.displayName = 'LiveConnection';
+};
 
-export default function MagneticSkillsOrb() {
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState('all');
-  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
-  const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [showIntroAnimation, setShowIntroAnimation] = useState(true);
-  // Client-only starfield to prevent SSR hydration mismatch
-  const [stars, setStars] = useState<Array<{ left: string; top: string; anim: string }>>([]);
+export default function CreativeSkillsPortfolio() {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeView, setActiveView] = useState<'hexagon' | 'radar' | 'timeline'>('hexagon');
 
-  // Track mouse for magnetic effect
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleResize = () => {
-      if (containerRef.current) {
-        setContainerRect(containerRef.current.getBoundingClientRect());
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Intro animation timer
-  useEffect(() => {
-    const timer = setTimeout(() => setShowIntroAnimation(false), 3000);
+    const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
-  // Generate starfield on client after mount to avoid SSR randomness
-  useEffect(() => {
-    const count = 50;
-    const generated = Array.from({ length: count }).map(() => {
-      const left = `${Math.random() * 100}%`;
-      const top = `${Math.random() * 100}%`;
-      const duration = 2 + Math.random() * 4;
-      const delay = Math.random() * 2;
-      return { left, top, anim: `twinkle ${duration}s ease-in-out infinite ${delay}s` };
+  const categories = ['all', 'Frontend', 'Backend', 'Design', 'Creative'];
+
+  const filteredSkills = selectedCategory === 'all'
+    ? skillsData
+    : skillsData.filter(skill => skill.category === selectedCategory);
+
+  const RadarChart: React.FC = () => {
+    const centerX = 150;
+    const centerY = 150;
+    const radius = 120;
+
+    const categoryLevels = categories.slice(1).map(cat => {
+      const categorySkills = skillsData.filter(s => s.category === cat);
+      const avgLevel = categorySkills.reduce((acc, s) => acc + s.level, 0) / categorySkills.length || 0;
+      return { category: cat, level: avgLevel };
     });
-    setStars(generated);
-  }, []);
 
-  const filteredSkills = useMemo(() => {
-    return selectedType === 'all'
-      ? skillsData
-      : skillsData.filter(skill => skill.type === selectedType);
-  }, [selectedType]);
+    return (
+      <div className="bg-gray-900 rounded-2xl p-8">
+        <h3 className="text-xl font-bold text-white mb-6 text-center">Skill Radar</h3>
+        <svg width="300" height="300" className="mx-auto">
+          {/* Grid circles */}
+          {[20, 40, 60, 80, 100].map(percent => (
+            <circle
+              key={percent}
+              cx={centerX} cy={centerY}
+              r={radius * (percent / 100)}
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="1"
+            />
+          ))}
 
-  const skillsMap = useMemo(() => {
-    return skillsData.reduce((acc, skill) => {
-      acc[skill.name] = skill;
-      return acc;
-    }, {} as { [key: string]: Skill });
-  }, []);
+          {/* Axis lines */}
+          {categoryLevels.map((_, index) => {
+            const angle = (index * 2 * Math.PI) / categoryLevels.length - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            return (
+              <line
+                key={index}
+                x1={centerX} y1={centerY}
+                x2={x} y2={y}
+                stroke="rgba(255,255,255,0.2)"
+                strokeWidth="1"
+              />
+            );
+          })}
 
-  const activeConnections = useMemo(() => {
-    if (!hoveredSkill) return [];
-    const skill = skillsData.find(s => s.name === hoveredSkill);
-    return skill ? skill.connections : [];
-  }, [hoveredSkill]);
+          {/* Data polygon */}
+          <polygon
+            points={categoryLevels.map((cat, index) => {
+              const angle = (index * 2 * Math.PI) / categoryLevels.length - Math.PI / 2;
+              const distance = radius * (cat.level / 100);
+              const x = centerX + Math.cos(angle) * distance;
+              const y = centerY + Math.sin(angle) * distance;
+              return `${x},${y}`;
+            }).join(' ')}
+            fill="rgba(99, 102, 241, 0.3)"
+            stroke="rgb(99, 102, 241)"
+            strokeWidth="2"
+          />
+
+          {/* Category labels */}
+          {categoryLevels.map((cat, index) => {
+            const angle = (index * 2 * Math.PI) / categoryLevels.length - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * (radius + 20);
+            const y = centerY + Math.sin(angle) * (radius + 20);
+            return (
+              <text
+                key={cat.category}
+                x={x} y={y}
+                textAnchor="middle"
+                fill="white"
+                fontSize="12"
+                fontWeight="bold"
+              >
+                {cat.category}
+              </text>
+            );
+          })}
+        </svg>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black relative overflow-hidden">
-      {/* Animated particle background */}
-      <div className="absolute inset-0">
-        {stars.map((s, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-            style={{ left: s.left, top: s.top, animation: s.anim }}
-          />
-        ))}
-      </div>
+      {/* Animated background constellation */}
+      <SkillConstellation skills={skillsData} />
 
-      <div className="relative z-10 p-4 md:p-8">
-        {/* Magnetic header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-8xl font-black mb-6 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            ⚡ MAGNETIC SKILLS ⚡
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        {/* Creative header */}
+        <div className="text-center mb-16">
+          <h1 className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            SKILLS
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-4 animate-pulse">
-            Move your cursor around to feel the magnetic attraction!
+          <div className="w-32 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 mx-auto mb-6"></div>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Crafting digital experiences through code, design, and innovation
           </p>
+        </div>
 
-          {showIntroAnimation && (
-            <div className="text-lg text-yellow-400 animate-bounce">
-              🧲 Hover over the glowing orbs to see the magic ✨
-            </div>
-          )}
+        {/* Creative controls */}
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-12 gap-6">
 
-          {/* Magnetic filters */}
-          <div className="flex justify-center space-x-4 mt-8 flex-wrap gap-2">
-            {(['all', 'frontend', 'backend', 'tools'] as const).map(type => (
+          {/* View selector */}
+          <div className="flex bg-gray-800/50 backdrop-blur-sm rounded-full p-2 border border-gray-700">
+            {[
+              { id: 'hexagon', icon: '⬡', label: 'Hexagon' },
+              { id: 'radar', icon: '📡', label: 'Radar' },
+              { id: 'timeline', icon: '📈', label: 'Timeline' }
+            ].map(view => (
               <button
-                key={type}
-                onClick={() => setSelectedType(type)}
-                className={`px-6 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-110 ${selectedType === type
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50 animate-pulse'
-                  : 'bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 border border-gray-600'
+                key={view.id}
+                onClick={() => setActiveView(view.id as any)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeView === view.id
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white'
                   }`}
-                style={{
-                  boxShadow: selectedType === type ? `0 0 30px #8B5CF6` : 'none'
-                }}
               >
-                {type.toUpperCase()}
+                <span className="mr-2">{view.icon}</span>
+                {view.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Category filter */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105 ${selectedCategory === category
+                    ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg shadow-purple-500/25'
+                    : 'bg-gray-800/50 text-gray-300 hover:text-white border border-gray-700'
+                  }`}
+              >
+                {category === 'all' ? '✨ All' : category}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Magnetic Skills Constellation */}
-        <div
-          ref={containerRef}
-          className="relative mx-auto"
-          style={{
-            height: '600px',
-            maxWidth: '1200px',
-          }}
-        >
-          {/* Always show some connections for visual appeal */}
-          {skillsData.slice(0, 3).map(skill =>
-            skill.connections.slice(0, 1).map(connection => (
-              <LiveConnection
-                key={`base-${skill.name}-${connection}`}
-                from={skill.name}
-                to={connection}
-                isActive={false}
-                skillsMap={skillsMap}
+        {/* Skills display based on active view */}
+        {activeView === 'hexagon' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+            {filteredSkills.map((skill, index) => (
+              <CreativeSkillCard
+                key={skill.name}
+                skill={skill}
+                index={index}
+                isVisible={isVisible}
               />
-            ))
-          )}
+            ))}
+          </div>
+        )}
 
-          {/* Active connections */}
-          {hoveredSkill && skillsData.map(skill =>
-            skill.connections.map(connection => (
-              <LiveConnection
-                key={`active-${skill.name}-${connection}`}
-                from={skill.name}
-                to={connection}
-                isActive={hoveredSkill === skill.name || activeConnections.includes(skill.name)}
-                skillsMap={skillsMap}
-              />
-            ))
-          )}
+        {activeView === 'radar' && (
+          <div className="flex justify-center">
+            <RadarChart />
+          </div>
+        )}
 
-          {/* Magnetic skill orbs */}
-          {filteredSkills.map((skill, index) => (
-            <MagneticOrb
-              key={skill.name}
-              skill={skill}
-              index={index}
-              hoveredSkill={hoveredSkill}
-              setHoveredSkill={setHoveredSkill}
-              mousePos={mousePos}
-              containerRect={containerRect}
-            />
-          ))}
-        </div>
+        {activeView === 'timeline' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-cyan-400 to-purple-500"></div>
 
-        {/* Live status panel */}
-        {hoveredSkill && (
-          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up">
-            <div
-              className="bg-black/90 backdrop-blur-xl rounded-2xl p-6 border-2 min-w-80"
-              style={{
-                borderColor: skillsData.find(s => s.name === hoveredSkill)?.color,
-                boxShadow: `0 0 40px ${skillsData.find(s => s.name === hoveredSkill)?.color}60`
-              }}
-            >
-              <div className="text-center">
-                <h3 className="text-3xl font-bold text-white mb-2 animate-pulse">{hoveredSkill}</h3>
-                <div className="flex justify-center space-x-6 text-lg">
-                  <span className="text-green-400">✅ {skillsData.find(s => s.name === hoveredSkill)?.level}% Mastery</span>
-                  <span className="text-blue-400">🔗 {activeConnections.length} Connected</span>
+              {filteredSkills.map((skill, index) => (
+                <div key={skill.name} className={`relative flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} mb-12`}>
+                  <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
+                    <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-purple-500 transition-all duration-300">
+                      <h3 className="text-xl font-bold text-white mb-2">{skill.name}</h3>
+                      <p className="text-gray-300 mb-3">{skill.description}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="w-full bg-gray-700 rounded-full h-2 mr-4">
+                          <div
+                            className="h-full rounded-full transition-all duration-1000"
+                            style={{
+                              width: `${skill.level}%`,
+                              backgroundColor: skill.color
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-400 whitespace-nowrap">{skill.level}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timeline dot */}
+                  <div
+                    className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-gray-900"
+                    style={{ backgroundColor: skill.color }}
+                  ></div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* CSS Animations */}
       <style jsx>{`
-        @keyframes breathe-0 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes breathe-1 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-        @keyframes breathe-2 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-        @keyframes breathe-3 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
-        @keyframes breathe-4 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-        @keyframes breathe-5 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-        @keyframes breathe-6 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-        @keyframes breathe-7 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes breathe-8 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-        @keyframes breathe-9 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
-        @keyframes breathe-10 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-        @keyframes breathe-11 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes breathe-12 { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-        
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes pulse-line { 0% { opacity: 0.8; } 100% { opacity: 1; } }
-        
-        @keyframes slide-up {
-          from { opacity: 0; transform: translate(-50%, 20px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
-        .animate-slide-up { animation: slide-up 0.3s ease-out; }
+        @keyframes draw-circle {
+          from { stroke-dasharray: 0 175.9; }
+          to { stroke-dasharray: var(--target-dash) 175.9; }
+        }
       `}</style>
     </div>
   );

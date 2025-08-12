@@ -1,0 +1,28 @@
+<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="#0B0F1A"/>
+  <g opacity="0.3">
+    <circle cx="120" cy="90" r="4" fill="#fff"/>
+    <circle cx="340" cy="60" r="3" fill="#fff"/>
+    <circle cx="700" cy="120" r="4" fill="#fff"/>
+    <circle cx="220" cy="340" r="3" fill="#fff"/>
+    <circle cx="640" cy="300" r="4" fill="#fff"/>
+    <line x1="120" y1="90" x2="340" y2="60" stroke="#A78BFA" stroke-opacity="0.5"/>
+    <line x1="340" y1="60" x2="700" y2="120" stroke="#67E8F9" stroke-opacity="0.4"/>
+    <line x1="220" y1="340" x2="640" y2="300" stroke="#A78BFA" stroke-opacity="0.4"/>
+  </g>
+  <rect x="40" y="40" width="720" height="370" rx="20" fill="url(#g)" opacity="0.12"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-family="Inter, Segoe UI, Arial" font-size="42" font-weight="800" fill="#E9D5FF">
+    Social Media Mesh
+  </text>
+  <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle"
+        font-family="Inter, Segoe UI, Arial" font-size="18" fill="#C4B5FD">
+    Node • Express • MongoDB • React
+  </text>
+</svg>

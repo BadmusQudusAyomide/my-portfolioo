@@ -129,14 +129,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* Preload critical fonts */}
-        <link
-          rel="preload"
-          href="/_next/static/media/your-font-file.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* Removed invalid font preload (file not present) */}
 
         {/* Structured data */}
         <script type="application/ld+json">

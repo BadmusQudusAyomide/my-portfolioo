@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Home, User, Code, Folder, Mail } from 'lucide-react';
 
-type IconComponent = React.ComponentType<{ size?: number; className?: string }>;
-const navItems: { name: string; href: string; Icon: IconComponent }[] = [
+const navItems = [
   { name: 'Home', href: '#home', Icon: Home },
   { name: 'About', href: '#about', Icon: User },
   { name: 'Skills', href: '#skills', Icon: Code },
@@ -15,8 +14,7 @@ const navItems: { name: string; href: string; Icon: IconComponent }[] = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [currentHash, setCurrentHash] = useState('#home');
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isHoveringNav, setIsHoveringNav] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,117 +35,192 @@ export default function Navbar() {
     };
   }, []);
 
+  const getItemScale = (index) => {
+    if (hoveredIndex === null) return 1;
+    const distance = Math.abs(index - hoveredIndex);
+    if (distance === 0) return 1.2;
+    if (distance === 1) return 1.1;
+    if (distance === 2) return 1.05;
+    return 1;
+  };
+
   return (
     <motion.nav
-      initial={{ y: -80, opacity: 0 }}
+      initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="fixed inset-x-0 top-0 z-50 px-4"
-      onMouseEnter={() => setIsHoveringNav(true)}
-      onMouseLeave={() => setIsHoveringNav(false)}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+        delay: 0.2
+      }}
+      className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6"
     >
-      <div className={`mx-auto max-w-max transition-all duration-300 ${scrolled ? 'mt-2' : 'mt-4'}`}>
-        <div className={`relative inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 backdrop-blur-2xl shadow-lg shadow-black/20 px-3 py-2
-          dark:bg-gray-900/50 dark:border-white/10 transition-all duration-300 ${isHoveringNav ? 'bg-white/20 dark:bg-gray-900/70' : ''}`}>
+      <div className={`mx-auto max-w-fit transition-all duration-500 ease-out ${scrolled ? 'mt-3' : 'mt-6'
+        }`}>
+        {/* Main navigation container */}
+        <div className="relative">
+          {/* Animated background with multiple layers */}
+          <div className="absolute inset-0 rounded-full">
+            {/* Base glass layer */}
+            <div className="absolute inset-0 rounded-full bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] shadow-2xl" />
 
-          <div className="flex items-center justify-center gap-1 sm:gap-2 min-w-max">
+            {/* Gradient border animation */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-sm opacity-70 animate-pulse" />
+
+            {/* Inner glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/10 to-purple-600/10" />
+          </div>
+
+          {/* Navigation items */}
+          <div className="relative flex items-center gap-1 px-3 py-2.5">
             {navItems.map((item, index) => {
-              const active = currentHash === item.href;
-              const isHovered = hoveredIndex === index;
-              const distance = hoveredIndex === null ? Infinity : Math.abs(index - (hoveredIndex ?? 0));
-
-              // Dynamic scaling based on distance from hovered item
-              const scale = isHovered ? 1.2 :
-                distance === 1 ? 1.1 :
-                  distance === 2 ? 1.05 : 1;
-
               const { Icon } = item;
+              const isActive = currentHash === item.href;
+              const isHovered = hoveredIndex === index;
+              const scale = getItemScale(index);
 
               return (
                 <motion.div
                   key={item.name}
                   className="relative"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 20,
-                    delay: 0.1 + index * 0.05
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale
                   }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25
+                  }}
+                  onHoverStart={() => setHoveredIndex(index)}
+                  onHoverEnd={() => setHoveredIndex(null)}
                 >
                   <motion.a
                     href={item.href}
-                    aria-label={item.name}
-                    className={`group relative grid place-items-center w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-visible select-none
-                      ${active ? 'bg-cyan-500/20' : 'bg-white/5 hover:bg-white/10'}`}
-                    animate={{
-                      scale,
-                      boxShadow: isHovered ? '0 0 12px rgba(34, 211, 238, 0.4)' : 'none'
+                    className={`
+                      relative flex items-center justify-center w-10 h-10 rounded-xl
+                      transition-all duration-300 ease-out cursor-pointer
+                      ${isActive
+                        ? 'bg-white/20 text-white shadow-lg shadow-cyan-500/25'
+                        : 'bg-white/5 text-white/70 hover:bg-white/15 hover:text-white'
+                      }
+                    `}
+                    whileHover={{
+                      y: -2,
+                      transition: { duration: 0.2 }
                     }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    onHoverStart={() => setHoveredIndex(index)}
-                    onHoverEnd={() => setHoveredIndex(null)}
-                    onFocus={() => setHoveredIndex(index)}
-                    onBlur={() => setHoveredIndex(null)}
+                    whileTap={{
+                      scale: 0.95,
+                      transition: { duration: 0.1 }
+                    }}
                   >
                     {/* Active indicator */}
-                    {active && (
-                      <motion.span
-                        className="absolute -bottom-1 left-1/2 w-1 h-1 rounded-full bg-cyan-400"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 500 }}
-                      />
-                    )}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeIndicator"
+                          className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400/30 to-blue-500/30 blur-sm"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                    </AnimatePresence>
 
-                    {/* Icon with subtle hover effect */}
-                    <Icon
-                      size={20}
-                      className={`transition-all duration-200 ${active ? 'text-cyan-400 scale-110' : 'text-white/90 hover:text-white'}`}
-                      strokeWidth={active ? 2.5 : 2}
-                    />
-
-                    {/* Subtle glow effect */}
-                    <motion.span
-                      className={`absolute inset-0 rounded-full bg-cyan-400/20 blur-md -z-10`}
-                      animate={{ opacity: isHovered || active ? 1 : 0 }}
+                    {/* Icon */}
+                    <motion.div
+                      animate={{
+                        rotate: isHovered ? 5 : 0,
+                      }}
                       transition={{ duration: 0.2 }}
-                    />
-                  </motion.a>
+                    >
+                      <Icon
+                        size={16}
+                        className="relative z-10"
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
+                    </motion.div>
 
-                  {/* Tooltip with AnimatePresence for smooth exit */}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full px-2 py-1 rounded-md text-xs font-medium text-white 
-                          shadow-lg border border-white/15 bg-gray-800/90 backdrop-blur-md whitespace-nowrap pointer-events-none"
-                        style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))' }}
-                      >
-                        {item.name}
-                        {/* Tooltip arrow */}
-                        <div className="absolute left-1/2 -bottom-1 -translate-x-1/2 w-2 h-2 bg-gray-800/90 border-b border-r border-white/15 rotate-45" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                    {/* Hover glow effect */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-white/10 blur-md"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1.2 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    {/* Enhanced tooltip */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                          animate={{ opacity: 1, y: -16, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                          transition={{
+                            duration: 0.2,
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 25
+                          }}
+                          className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+                        >
+                          <div className="relative">
+                            {/* Tooltip background */}
+                            <div className="px-2.5 py-1.5 rounded-lg bg-gray-900/90 backdrop-blur-sm border border-white/20 shadow-xl">
+                              <span className="text-xs font-medium text-white whitespace-nowrap">
+                                {item.name}
+                              </span>
+                            </div>
+
+                            {/* Tooltip arrow */}
+                            <div className="absolute left-1/2 -translate-x-1/2 top-full">
+                              <div className="w-0 h-0 border-l-[4px] border-r-[4px] border-t-[4px] border-transparent border-t-gray-900/90" />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.a>
                 </motion.div>
               );
             })}
           </div>
 
-          {/* Ambient light effect when hovering navbar */}
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none -z-10"
-            animate={{
-              opacity: isHoveringNav ? 0.3 : 0,
-              background: 'radial-gradient(circle at center, rgba(56, 189, 248, 0.3) 0%, transparent 70%)'
-            }}
-            transition={{ duration: 0.3 }}
-          />
+          {/* Floating particles effect */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-white/30 rounded-full"
+                initial={{
+                  x: Math.random() * 200,
+                  y: Math.random() * 40,
+                  opacity: 0
+                }}
+                animate={{
+                  x: Math.random() * 200,
+                  y: Math.random() * 40,
+                  opacity: [0, 0.6, 0],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 2
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </motion.nav>

@@ -14,7 +14,7 @@ const navItems = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [currentHash, setCurrentHash] = useState('#home');
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +35,7 @@ export default function Navbar() {
     };
   }, []);
 
-  const getItemScale = (index) => {
+  const getItemScale = (index: number) => {
     if (hoveredIndex === null) return 1;
     const distance = Math.abs(index - hoveredIndex);
     if (distance === 0) return 1.2;

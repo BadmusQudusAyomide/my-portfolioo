@@ -3,6 +3,8 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import ParticlesBackground from "../components/ParticlesBackground";
 
+export const viewport = { width: "device-width", initialScale: 1 };
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -16,11 +18,13 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: "Badmus Qudus Portfolio",
   title: {
     default: "Badmus Qudus Ayomide | Full Stack Developer",
-    template: "%s | Badmus Qudus Ayomide"
+    template: "%s | Badmus Qudus Ayomide",
   },
-  description: "Portfolio of Badmus Qudus Ayomide, a passionate full stack developer specializing in React, Next.js, and Node.js.",
+  description:
+    "Portfolio of Badmus Qudus Ayomide, a passionate full stack developer specializing in React, Next.js, and Node.js.",
   keywords: [
     "Badmus Qudus Ayomide",
     "Badmus Qudus",
@@ -34,23 +38,26 @@ export const metadata: Metadata = {
     "Frontend Engineer",
     "Tailwind CSS",
     "TypeScript",
-    "Flutter Developer"
+    "Flutter Developer",
   ],
-  authors: [{ 
-    name: "Badmus Qudus Ayomide", 
-    url: "https://badmusqudusayomide.vercel.app/" 
-  }],
+  authors: [
+    {
+      name: "Badmus Qudus Ayomide",
+      url: "https://badmusqudusayomide.vercel.app/",
+    },
+  ],
   metadataBase: new URL("https://badmusqudusayomide.vercel.app"),
   openGraph: {
     title: "Badmus Qudus | Full Stack Developer",
-    description: "Building modern web applications with React, Next.js, and Tailwind CSS",
+    description:
+      "Building modern web applications with React, Next.js, and Tailwind CSS",
     url: "https://badmusqudusayomide.vercel.app",
     siteName: "Badmus Qudus Portfolio",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Badmus Qudus Portfolio",
@@ -60,9 +67,11 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Badmus Qudus | Full Stack Developer",
-    description: "Building modern web applications with React, Next.js, and Tailwind CSS",
+    description:
+      "Building modern web applications with React, Next.js, and Tailwind CSS",
     creator: "@AyomideQud49713",
-    images: ["/twitter-image.jpg"],
+    site: "@AyomideQud49713",
+    images: ["/twitter-image.png"],
   },
   robots: {
     index: true,
@@ -71,8 +80,9 @@ export const metadata: Metadata = {
       index: true,
       follow: true,
       "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
-    
   },
   icons: {
     icon: [
@@ -102,7 +112,7 @@ export const metadata: Metadata = {
     google: "bQPghGL9pRGvrRLNXuoSsTMXJOZw5MF3aZKEjkys2O8",
   },
   alternates: {
-    canonical: 'https://badmusqudusayomide.vercel.app',
+    canonical: "https://badmusqudusayomide.vercel.app",
   },
 };
 
@@ -112,23 +122,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
       className={`${inter.variable} ${robotoMono.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <head>
         {/* Favicon Links */}
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#6366f1" />
         <meta name="msapplication-TileColor" content="#6366f1" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)" />
+        <meta
+          name="theme-color"
+          content="#ffffff"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#111827"
+          media="(prefers-color-scheme: dark)"
+        />
 
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
         {/* Removed invalid font preload (file not present) */}
 
         {/* Structured data */}
@@ -136,32 +157,84 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
-            "name": "Badmus Qudus Ayomide",
-            "jobTitle": "Full Stack Developer",
-            "url": "https://badmusqudusayomide.vercel.app/",
-            "sameAs": [
+            name: "Badmus Qudus Ayomide",
+            jobTitle: "Full Stack Developer",
+            image: "https://badmusqudusayomide.vercel.app/og-image.png",
+            url: "https://badmusqudusayomide.vercel.app/",
+            sameAs: [
               "https://github.com/BadmusQudusAyomide",
               "https://ng.linkedin.com/in/qudus-ayomide-badmus",
-              "https://x.com/AyomideQud49713"
+              "https://x.com/AyomideQud49713",
             ],
-            "description": "Full Stack Developer specializing in React, Next.js, Tailwind CSS and modern web technologies.",
-            "skills": [
+            description:
+              "Full Stack Developer specializing in React, Next.js, Tailwind CSS and modern web technologies.",
+            skills: [
               "React",
               "Next.js",
               "TypeScript",
               "Tailwind CSS",
               "Node.js",
               "UI/UX Design",
-              "Flutter"
+              "Flutter",
             ],
-            "address": {
+            address: {
               "@type": "PostalAddress",
-              "addressCountry": "Nigeria"
-            }
+              addressCountry: "Nigeria",
+            },
+          })}
+        </script>
+        {/* WebSite structured data with SearchAction */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Badmus Qudus Portfolio",
+            url: "https://badmusqudusayomide.vercel.app/",
+            potentialAction: {
+              "@type": "SearchAction",
+              target:
+                "https://badmusqudusayomide.vercel.app/?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          })}
+        </script>
+        {/* Breadcrumb structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://badmusqudusayomide.vercel.app/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "About",
+                item: "https://badmusqudusayomide.vercel.app/#about",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: "Projects",
+                item: "https://badmusqudusayomide.vercel.app/#projects",
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                name: "Contact",
+                item: "https://badmusqudusayomide.vercel.app/#contact",
+              },
+            ],
           })}
         </script>
       </head>
-      <body className={`${inter.className} bg-[#0b0a1f] text-gray-100 antialiased min-h-screen relative`}>
+      <body
+        className={`${inter.className} bg-[#0b0a1f] text-gray-100 antialiased min-h-screen relative`}
+      >
         <ParticlesBackground />
         {children}
       </body>

@@ -198,28 +198,36 @@ export default function Navbar() {
 
           {/* Floating particles effect */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-white/30 rounded-full"
-                initial={{
-                  x: Math.random() * 200,
-                  y: Math.random() * 40,
-                  opacity: 0
-                }}
-                animate={{
-                  x: Math.random() * 200,
-                  y: Math.random() * 40,
-                  opacity: [0, 0.6, 0],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: Math.random() * 2
-                }}
-              />
-            ))}
+            {[...Array(6)].map((_, i) => {
+              // Use deterministic values based on index to avoid hydration mismatch
+              const xPos = (i * 33) % 200;
+              const yPos = (i * 7) % 40;
+              const duration = 3 + (i * 0.5);
+              const delay = i * 0.3;
+              
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-white/30 rounded-full"
+                  initial={{
+                    x: xPos,
+                    y: yPos,
+                    opacity: 0
+                  }}
+                  animate={{
+                    x: xPos + 50,
+                    y: yPos + 10,
+                    opacity: [0, 0.6, 0],
+                  }}
+                  transition={{
+                    duration: duration,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: delay
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,10 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { GithubLogo, ArrowSquareOut } from "phosphor-react";
+import { client, projectsQuery, urlFor } from "@/lib/sanity";
+import { Project as SanityProject } from "@/types/project";
+import ProjectCard from "./ProjectCard";
 
-type Project = {
+// Legacy type for fallback data
+type LegacyProject = {
     title: string;
     description: string;
     tags: string[];
@@ -14,14 +19,15 @@ type Project = {
     featured?: boolean;
 };
 
-const projects: Project[] = [
+// Fallback projects data (in case Sanity is not available)
+const fallbackProjects: LegacyProject[] = [
     {
         title: "Social Media Mesh",
         description:
             "A modern social platform with authentication, posts, likes, comments, and profiles. Backend built with Node.js, Express, and MongoDB using secure JWT auth and RESTful APIs. Clean architecture with a focus on scalability and developer ergonomics.",
         tags: ["Node.js", "Express", "MongoDB", "JWT", "REST"],
         image: "/projects/mesh.svg",
-        link: "http://mesh-blush.vercel.app/",
+        link: "https://mesh-blush.vercel.app/",
         github: "https://github.com/BadmusQudusAyomide/mesh",
         featured: true,
     },
@@ -82,13 +88,48 @@ export default function Projects({
     prefersReducedMotion?: boolean;
 }) {
     const [activeFilter, setActiveFilter] = useState('All');
+    const [projects, setProjects] = useState<(SanityProject | LegacyProject)[]>(fallbackProjects);
+    const [isLoading, setIsLoading] = useState(true);
+    const [usingSanity, setUsingSanity] = useState(false);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                // Check if Sanity environment variables are available
+                if (process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && process.env.NEXT_PUBLIC_SANITY_DATASET) {
+                    const sanityProjects = await client.fetch(projectsQuery);
+                    if (sanityProjects && sanityProjects.length > 0) {
+                        setProjects(sanityProjects);
+                        setUsingSanity(true);
+                    }
+                }
+            } catch (error) {
+                console.log('Falling back to static projects data');
+                // Keep fallback projects
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProjects();
+    }, []);
 
     const filteredProjects = projects.filter(project => {
         if (activeFilter === 'All') return true;
-        if (activeFilter === 'Featured') return !!project.featured;
-        if (activeFilter === 'Web Apps') return project.tags.some(tag =>
-            ['React', 'Next.js', 'JavaScript', 'TypeScript'].includes(tag));
-        if (activeFilter === 'Mobile') return project.tags.includes('Flutter');
+        if (activeFilter === 'Featured') return !!(project as any).featured;
+        
+        // Handle both Sanity and legacy project structures
+        if (usingSanity) {
+            const sanityProject = project as SanityProject;
+            if (activeFilter === 'Web Apps') return sanityProject.category === 'web';
+            if (activeFilter === 'Mobile') return sanityProject.category === 'mobile';
+        } else {
+            const legacyProject = project as LegacyProject;
+            if (activeFilter === 'Web Apps') return legacyProject.tags.some(tag =>
+                ['React', 'Next.js', 'JavaScript', 'TypeScript'].includes(tag));
+            if (activeFilter === 'Mobile') return legacyProject.tags.includes('Flutter');
+        }
+        
         return true;
     });
     
@@ -153,111 +194,59 @@ export default function Projects({
 
                 {/* Project grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredProjects.map((project, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
-                            whileHover={prefersReducedMotion ? {} : { y: -10 }}
-                            className="group relative cursor-pointer"
-                        >
-                            {/* Image Container */}
-                            <div className="relative h-56 overflow-hidden">
-                                <Image
-                                    src={project.image}
-                                    alt={`Screenshot of ${project.title}`}
-                                    fill
-                                    style={{ objectFit: "cover" }}
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                    className="transition-all duration-700 group-hover:scale-110"
-                                    loading={index < 3 ? "eager" : "lazy"}
-                                />
+                    {filteredProjects.map((project, index) => {
+                        // Handle both Sanity and legacy project structures
+                        const isSanityProject = usingSanity && 'slug' in project;
+                        const sanityProject = project as SanityProject;
+                        const legacyProject = project as LegacyProject;
+                        
+                        // Build a safe image URL (fallback if Sanity heroImage is missing)
+                        const heroUrl = (isSanityProject && sanityProject.heroImage)
+                            ? urlFor(sanityProject.heroImage).width(600).height(400).url()
+                            : null;
 
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-                            </div>
+                        const projectData = {
+                            title: project.title,
+                            description: isSanityProject ? (sanityProject.summary || '') : legacyProject.description,
+                            image: isSanityProject 
+                                ? (heroUrl ?? '/placeholder-project.svg')
+                                : (legacyProject.image || '/placeholder-project.svg'),
+                            technologies: isSanityProject ? (sanityProject.technologies || []) : (legacyProject.tags || []),
+                            liveUrl: isSanityProject ? sanityProject.liveUrl : legacyProject.link,
+                            githubUrl: isSanityProject ? sanityProject.githubUrl : legacyProject.github,
+                            slug: isSanityProject ? sanityProject.slug.current : null,
+                            featured: isSanityProject ? sanityProject.featured : legacyProject.featured
+                        };
 
-                            {/* Project info */}
-                            <div className="relative z-10 p-6">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-bold text-gray-100 group-hover:text-purple-400 transition-colors">
-                                        {project.title}
-                                    </h3>
-                                    <div className="flex gap-2">
-                                        {project.github !== "#" && (
-                                            <motion.a
-                                                href={project.github}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                whileHover={{ y: -2 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className="text-gray-400 hover:text-white p-1"
-                                            >
-                                                <GithubLogo className="w-5 h-5" weight="bold" />
-                                            </motion.a>
-                                        )}
-                                        {project.link !== "#" && (
-                                            <motion.a
-                                                href={project.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                whileHover={{ y: -2 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className="text-gray-400 hover:text-white p-1"
-                                            >
-                                                <ArrowSquareOut className="w-5 h-5" weight="bold" />
-                                            </motion.a>
-                                        )}
-                                    </div>
-                                </div>
-                                <p className="text-gray-400 mb-4">
-                                    {project.description}
-                                </p>
-
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {project.tags.map((tag, tagIndex) => (
-                                        <span
-                                            key={tagIndex}
-                                            className="text-xs px-3 py-1 bg-gray-700/50 rounded-full text-purple-300 border border-gray-600/50"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                <div className="mt-5 flex gap-3">
-                                    {project.link !== "#" && (
-                                        <motion.a
-                                            href={project.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            whileHover={{ scale: 1.03, y: -1 }}
-                                            whileTap={{ scale: 0.97 }}
-                                            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-sm font-medium flex items-center gap-2 shadow-lg"
-                                        >
-                                            <span>Live Preview</span>
-                                            <ArrowSquareOut className="w-4 h-4" weight="bold" />
-                                        </motion.a>
-                                    )}
-                                    {project.github !== "#" && (
-                                        <motion.a
-                                            href={project.github}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            whileHover={{ scale: 1.03, y: -1 }}
-                                            whileTap={{ scale: 0.97 }}
-                                            className="px-4 py-2 text-purple-400 border border-purple-400 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-purple-400/10 transition-colors"
-                                        >
-                                            <span>GitHub</span>
-                                            <GithubLogo className="w-4 h-4" weight="bold" />
-                                        </motion.a>
-                                    )}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                        return (
+                            <motion.div
+                                key={isSanityProject ? sanityProject._id : index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1, duration: 0.5 }}
+                                whileHover={prefersReducedMotion ? {} : { y: -10 }}
+                                className="group relative cursor-pointer"
+                            >
+                                {/* Wrap in Link if it's a Sanity project */}
+                                {projectData.slug ? (
+                                    <Link href={`/projects/${projectData.slug}`}>
+                                        <ProjectCard 
+                                            project={projectData} 
+                                            index={index} 
+                                            prefersReducedMotion={prefersReducedMotion}
+                                        />
+                                    </Link>
+                                ) : (
+                                    <ProjectCard 
+                                        project={projectData} 
+                                        index={index} 
+                                        prefersReducedMotion={prefersReducedMotion}
+                                    />
+                                )}
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 {/* Call to Action */}
@@ -269,15 +258,24 @@ export default function Projects({
                     className="text-center mt-16"
                 >
                     <p className="text-lg text-gray-400 mb-6">
-                        Interested in collaborating on your next project?
+                        Want to see more detailed case studies?
                     </p>
-                    <motion.button
-                        whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-medium text-white hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-purple-500/25"
-                    >
-                        Get In Touch
-                    </motion.button>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link
+                            href="/projects"
+                            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-medium text-white hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-purple-500/25"
+                        >
+                            View All Projects
+                        </Link>
+                        <motion.a
+                            href="#contact"
+                            whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="px-8 py-4 border border-purple-400/70 text-purple-300 rounded-full font-medium hover:bg-purple-400/10 transition-all"
+                        >
+                            Get In Touch
+                        </motion.a>
+                    </div>
                 </motion.div>
             </div>
         </section>

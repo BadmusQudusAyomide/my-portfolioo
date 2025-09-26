@@ -9,7 +9,6 @@ import Projects from '../components/Projects';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
-// Projects data moved into components/Projects.tsx
 
 export default function Home() {
   const [loading] = useState(false);
@@ -23,12 +22,9 @@ export default function Home() {
         );
       }
     } catch {
-      // ignore
+     
     }
-    // If you want a brief loader, set loading true then clear it
-    // setLoading(true);
-    // const timer = setTimeout(() => setLoading(false), 1200);
-    // return () => clearTimeout(timer);
+
   }, []);
 
   if (loading) return <Loader />;

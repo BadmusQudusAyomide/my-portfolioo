@@ -2,18 +2,25 @@
   "name": "my-portfolio",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@10.0.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "postbuild": "next-sitemap",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:slow": "next dev",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@sanity/client": "^7.11.2",
+    "@sanity/image-url": "^1.2.0",
+    "@sanity/vision": "^4.10.1",
     "framer-motion": "^12.9.4",
     "geist": "^1.4.1",
     "lucide-react": "^0.539.0",
     "next": "15.3.1",
+    "next-sanity": "^11.4.2",
     "next-sitemap": "^4.2.3",
     "phosphor-react": "^1.4.1",
     "postcss": "^8.5.3",
@@ -21,6 +28,8 @@
     "react-dom": "^19.0.0",
     "react-tsparticles": "^2.12.2",
     "react-type-animation": "^3.2.0",
+    "sanity": "^4.10.1",
+    "styled-components": "^6.1.19",
     "tsparticles-slim": "^2.12.0"
   },
   "devDependencies": {
@@ -32,6 +41,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "tailwindcss": "^4.1.5",
+    "turbo": "^2.5.8",
     "typescript": "^5"
   }
 }

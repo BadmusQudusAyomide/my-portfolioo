@@ -36,29 +36,42 @@ export default function Footer() {
         <footer className="relative py-16 bg-gradient-to-b from-gray-900 to-gray-950 overflow-visible">
             {/* Floating particles */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(15)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-10"
-                        initial={{
-                            x: `${Math.random() * 100}%`,
-                            y: `${Math.random() * 100}%`,
-                            width: `${Math.random() * 10 + 5}px`,
-                            height: `${Math.random() * 10 + 5}px`
-                        }}
-                        animate={{
-                            y: [`${Math.random() * 20}%`, `${Math.random() * 80}%`, `${Math.random() * 20}%`],
-                            x: [`${Math.random() * 20}%`, `${Math.random() * 80}%`, `${Math.random() * 20}%`],
-                            opacity: [0.05, 0.2, 0.05]
-                        }}
-                        transition={{
-                            duration: Math.random() * 10 + 10,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            ease: "easeInOut"
-                        }}
-                    />
-                ))}
+                {[...Array(15)].map((_, i) => {
+                    // Use deterministic values based on index
+                    const xPos = (i * 7) % 100;
+                    const yPos = (i * 13) % 100;
+                    const width = 5 + (i * 2) % 10;
+                    const height = 5 + (i * 3) % 10;
+                    const duration = 10 + (i * 2) % 10;
+                    const yMid = (yPos + 30) % 80;
+                    const xMid = (xPos + 40) % 80;
+                    const yEnd = (yPos + 10) % 100;
+                    const xEnd = (xPos + 20) % 100;
+                    
+                    return (
+                        <motion.div
+                            key={i}
+                            className="absolute rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-10"
+                            initial={{
+                                x: `${xPos}%`,
+                                y: `${yPos}%`,
+                                width: `${width}px`,
+                                height: `${height}px`
+                            }}
+                            animate={{
+                                y: [`${yPos}%`, `${yMid}%`, `${yEnd}%`],
+                                x: [`${xPos}%`, `${xMid}%`, `${xEnd}%`],
+                                opacity: [0.05, 0.2, 0.05]
+                            }}
+                            transition={{
+                                duration: duration,
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                                ease: "easeInOut"
+                            }}
+                        />
+                    );
+                })}
             </div>
 
             <div className="container mx-auto px-6 relative z-10">

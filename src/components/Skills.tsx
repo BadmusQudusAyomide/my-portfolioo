@@ -32,6 +32,9 @@ const CreativeSkillCard: React.FC<{ skill: Skill; index: number; isVisible: bool
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [animationDelay, setAnimationDelay] = useState(0);
+  
+  // Calculate circumference for the progress circle
+  const circumference = 2 * Math.PI * 45; // radius = 45
 
   useEffect(() => {
     setAnimationDelay(index * 150);
@@ -76,23 +79,29 @@ const CreativeSkillCard: React.FC<{ skill: Skill; index: number; isVisible: bool
         >
           {/* Skill level visualization */}
           <div className="relative w-16 h-16 mb-2">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+            <svg className="w-full h-full" viewBox="0 0 100 100">
               <circle
-                cx="32" cy="32" r="28"
+                cx="50" cy="50" r="45"
                 fill="none"
                 stroke="rgba(255,255,255,0.1)"
                 strokeWidth="4"
               />
               <circle
-                cx="32" cy="32" r="28"
+                cx="50"
+                cy="50"
+                r="45"
                 fill="none"
                 stroke={skill.color}
                 strokeWidth="4"
-                strokeDasharray={`${(skill.level / 100) * 175.9} 175.9`}
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference}
                 strokeLinecap="round"
                 className="transition-all duration-1000"
                 style={{
-                  animation: isVisible ? 'draw-circle 2s ease-out forwards' : 'none',
+                  animationName: isVisible ? 'draw-circle' : 'none',
+                  animationDuration: '2s',
+                  animationTimingFunction: 'ease-out',
+                  animationFillMode: 'forwards',
                   animationDelay: `${animationDelay + 500}ms`,
                 }}
               />
@@ -117,13 +126,16 @@ const CreativeSkillCard: React.FC<{ skill: Skill; index: number; isVisible: bool
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 rounded-full animate-ping"
+                className="absolute w-1 h-1 rounded-full"
                 style={{
                   backgroundColor: skill.color,
                   top: `${20 + i * 10}%`,
                   left: `${10 + i * 15}%`,
-                  animationDelay: `${i * 200}ms`,
+                  animationName: 'ping',
                   animationDuration: '1.5s',
+                  animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+                  animationIterationCount: 'infinite',
+                  animationDelay: `${i * 200}ms`,
                 }}
               />
             ))}
@@ -134,10 +146,17 @@ const CreativeSkillCard: React.FC<{ skill: Skill; index: number; isVisible: bool
   );
 };
 
-const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
+function CreativeSkillsPortfolio() {
+  // Visualization canvas; no SSR-bound state needed here
+  const [isMounted, setIsMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -156,8 +175,8 @@ const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
       size: number;
     }> = [];
 
-    // Create particles based on skills
-    skills.forEach((skill) => {
+    // Create particles based on skills data
+    skillsData.forEach((skill) => {
       for (let i = 0; i < Math.floor(skill.level / 10); i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -208,7 +227,7 @@ const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
     };
 
     animate();
-  }, [skills]);
+  }, [isMounted]);
 
   return (
     <canvas
@@ -219,7 +238,7 @@ const SkillConstellation: React.FC<{ skills: Skill[] }> = ({ skills }) => {
   );
 };
 
-export default function CreativeSkillsPortfolio() {
+function CreativeSkillsPortfolioMain() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const [activeView, setActiveView] = useState<'hexagon' | 'radar' | 'timeline'>('hexagon');
@@ -318,7 +337,7 @@ export default function CreativeSkillsPortfolio() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black relative overflow-hidden">
       {/* Animated background constellation */}
-      <SkillConstellation skills={skillsData} />
+      <CreativeSkillsPortfolio />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
@@ -446,3 +465,5 @@ export default function CreativeSkillsPortfolio() {
     </div>
   );
 }
+
+export default CreativeSkillsPortfolioMain;

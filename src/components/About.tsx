@@ -4,8 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 // Helper component for typing effect
 function TypewriterEffect({ text, delay = 50 }: { text: string; delay?: number }) {
   const [displayedText, setDisplayedText] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     let i = 0;
     const typing = setInterval(() => {
       if (i < text.length) {
@@ -18,6 +20,11 @@ function TypewriterEffect({ text, delay = 50 }: { text: string; delay?: number }
 
     return () => clearInterval(typing);
   }, [text, delay]);
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return <span>{text}</span>;
+  }
 
   return (
     <>
@@ -32,9 +39,11 @@ type CodeSnippet = { title: string; code: string };
 function OptimizedCodeDisplay({ codeSnippets }: { codeSnippets: CodeSnippet[] }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Cycle through tabs
+  // Mount check to prevent hydration mismatch
   useEffect(() => {
+    setIsMounted(true);
     setIsVisible(true);
     const interval = setInterval(() => {
       setCurrentTab(prev => (prev + 1) % codeSnippets.length);
@@ -62,6 +71,21 @@ function OptimizedCodeDisplay({ codeSnippets }: { codeSnippets: CodeSnippet[] })
   };
 
   const currentSnippet = codeSnippets[currentTab];
+
+  // Prevent hydration mismatch by only rendering after mount
+  if (!isMounted) {
+    return (
+      <div className="transition-opacity duration-500 opacity-0">
+        <div className="relative w-full bg-gray-800/30 border border-gray-700/50 rounded-lg sm:rounded-xl overflow-hidden backdrop-blur-sm">
+          <div className="relative bg-gray-900/95 rounded-lg backdrop-blur-sm border border-gray-700/30 min-h-[200px] sm:min-h-[280px]">
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-400">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>

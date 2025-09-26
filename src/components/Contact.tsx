@@ -38,30 +38,41 @@ export default function Contact({ prefersReducedMotion }: ContactProps) {
         <section id="contact" className="relative py-20 overflow-hidden bg-gradient-to-b from-gray-900 to-gray-950" aria-label="Contact me">
             {/* Floating background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(10)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10"
-                        initial={{
-                            x: `${Math.random() * 100}%`,
-                            y: `${Math.random() * 100}%`,
-                            width: `${Math.random() * 300 + 100}px`,
-                            height: `${Math.random() * 300 + 100}px`,
-                            opacity: 0.05
-                        }}
-                        animate={{
-                            x: [`${Math.random() * 20}%`, `${Math.random() * 80}%`],
-                            y: [`${Math.random() * 20}%`, `${Math.random() * 80}%`],
-                            opacity: [0.05, 0.15, 0.05]
-                        }}
-                        transition={{
-                            duration: Math.random() * 20 + 20,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            ease: "easeInOut"
-                        }}
-                    />
-                ))}
+                {[...Array(10)].map((_, i) => {
+                    // Use deterministic values based on index
+                    const xPos = (i * 11) % 100;
+                    const yPos = (i * 17) % 100;
+                    const width = 100 + (i * 23) % 300;
+                    const height = 100 + (i * 31) % 300;
+                    const duration = 20 + (i * 3) % 20;
+                    const xEnd = (xPos + 30) % 80;
+                    const yEnd = (yPos + 40) % 80;
+                    
+                    return (
+                        <motion.div
+                            key={i}
+                            className="absolute rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10"
+                            initial={{
+                                x: `${xPos}%`,
+                                y: `${yPos}%`,
+                                width: `${width}px`,
+                                height: `${height}px`,
+                                opacity: 0.05
+                            }}
+                            animate={{
+                                x: [`${xPos}%`, `${xEnd}%`],
+                                y: [`${yPos}%`, `${yEnd}%`],
+                                opacity: [0.05, 0.15, 0.05]
+                            }}
+                            transition={{
+                                duration: duration,
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                                ease: "easeInOut"
+                            }}
+                        />
+                    );
+                })}
             </div>
 
             <div className="container mx-auto px-6 relative z-10">

@@ -9,7 +9,7 @@ import ProjectGallery from '@/components/ProjectGallery'
 import ProjectJsonLd from '@/components/ProjectJsonLd'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // Generate static params for all projects

@@ -45,8 +45,9 @@ export default function ProjectGallery({ images, projectTitle }: ProjectGalleryP
   // Add keyboard event listeners
   useState(() => {
     if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleKeyDown as any)
-      return () => window.removeEventListener('keydown', handleKeyDown as any)
+      const keyHandler = handleKeyDown as (e: Event) => void
+      window.addEventListener('keydown', keyHandler)
+      return () => window.removeEventListener('keydown', keyHandler)
     }
   })
 

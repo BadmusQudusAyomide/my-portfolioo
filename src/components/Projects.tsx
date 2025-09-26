@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { GithubLogo, ArrowSquareOut } from "phosphor-react";
 import { client, projectsQuery, urlFor } from "@/lib/sanity";
 import { Project as SanityProject } from "@/types/project";
 import ProjectCard from "./ProjectCard";
@@ -89,7 +87,6 @@ export default function Projects({
 }) {
     const [activeFilter, setActiveFilter] = useState('All');
     const [projects, setProjects] = useState<(SanityProject | LegacyProject)[]>(fallbackProjects);
-    const [isLoading, setIsLoading] = useState(true);
     const [usingSanity, setUsingSanity] = useState(false);
 
     useEffect(() => {
@@ -103,11 +100,9 @@ export default function Projects({
                         setUsingSanity(true);
                     }
                 }
-            } catch (error) {
+            } catch {
                 console.log('Falling back to static projects data');
                 // Keep fallback projects
-            } finally {
-                setIsLoading(false);
             }
         };
 
@@ -116,7 +111,7 @@ export default function Projects({
 
     const filteredProjects = projects.filter(project => {
         if (activeFilter === 'All') return true;
-        if (activeFilter === 'Featured') return !!(project as any).featured;
+        if (activeFilter === 'Featured') return !!(project as SanityProject | LegacyProject).featured;
         
         // Handle both Sanity and legacy project structures
         if (usingSanity) {

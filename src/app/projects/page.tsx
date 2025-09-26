@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink, Github, Calendar, User, Clock } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Github, User, Clock } from 'lucide-react'
 import { client, projectsQuery, urlFor } from '@/lib/sanity'
 import { Project } from '@/types/project'
 

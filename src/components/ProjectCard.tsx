@@ -20,7 +20,7 @@ interface ProjectCardProps {
     prefersReducedMotion: boolean;
 }
 
-export default function ProjectCard({ project, index, prefersReducedMotion }: ProjectCardProps) {
+export default function ProjectCard({ project, index }: ProjectCardProps) {
     return (
         <>
             {/* Image Container */}

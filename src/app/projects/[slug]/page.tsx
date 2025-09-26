@@ -2,9 +2,9 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink, Github, Calendar, User, Clock, CheckCircle } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Github, User, Clock, CheckCircle } from 'lucide-react'
 import { client, projectBySlugQuery, projectSlugsQuery, urlFor } from '@/lib/sanity'
-import { Project, ProjectMeta } from '@/types/project'
+import { Project } from '@/types/project'
 import ProjectGallery from '@/components/ProjectGallery'
 import ProjectJsonLd from '@/components/ProjectJsonLd'
 
@@ -322,7 +322,7 @@ export default async function ProjectPage({ params }: Props) {
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-2xl font-bold mb-4">Interested in working together?</h2>
             <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-              I'm always open to discussing new opportunities and interesting projects.
+              I&apos;m always open to discussing new opportunities and interesting projects.
             </p>
             <Link
               href="/#contact"
